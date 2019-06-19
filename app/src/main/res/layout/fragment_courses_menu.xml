@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context=".ui.CoursesMenuFragment">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:id="@+id/fragment_courses_menu_layout">
+        <TextView
+                android:text="Categorias"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/fragment_courses_menu_title"
+                android:textSize="30sp"
+                android:gravity="center" android:paddingBottom="35dp" android:paddingTop="20dp"/>
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/fragment_courses_menu_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+    </LinearLayout>
+
+</FrameLayout>

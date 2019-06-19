@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/nav_control"
+            app:startDestination="@id/coursesMenuFragment">
+
+    <fragment android:id="@+id/logInFragment"
+              android:name="com.example.beta.ui.LogInFragment"
+              tools:layout="@layout/fragment_log_in"
+              android:label="fragment_log_in">
+        <action android:id="@+id/action_logInFragment_to_registerFragment"
+                app:destination="@id/registerFragment"/>
+        <action android:id="@+id/action_logInFragment_to_coursesMenuFragment"
+                app:destination="@id/coursesMenuFragment"/>
+    </fragment>
+
+    <fragment android:id="@+id/registerFragment"
+              android:name="com.example.beta.ui.RegisterFragment"
+              android:label="fragment_register"
+              tools:layout="@layout/fragment_register">
+        <action android:id="@+id/action_registerFragment_to_logInFragment"
+                app:destination="@id/logInFragment"/>
+    </fragment>
+    <fragment android:id="@+id/rankingMenuFragment2"
+              android:name="com.example.beta.ui.RankingMenuFragment"
+              android:label="fragment_ranking_menu"
+              tools:layout="@layout/fragment_ranking_menu">
+        <action android:id="@+id/action_rankingMenuFragment2_to_mapMenuFragment"
+                app:destination="@id/mapMenuFragment"/>
+        <action android:id="@+id/action_rankingMenuFragment2_to_profilesFragment"
+                app:destination="@id/profilesFragment"/>
+    </fragment>
+    <fragment android:id="@+id/mapMenuFragment"
+              android:name="com.example.beta.ui.MapMenuFragment"
+              android:label="fragment_map_menu"
+              tools:layout="@layout/fragment_map_menu">
+        <action android:id="@+id/action_mapMenuFragment_to_rankingMenuFragment2"
+                app:destination="@id/rankingMenuFragment2"/>
+    </fragment>
+    <fragment android:id="@+id/courseFragment" android:name="com.example.beta.ui.CourseFragment"
+              android:label="fragment_course" tools:layout="@layout/fragment_course">
+        <action android:id="@+id/action_courseFragment_to_locationFragment" app:destination="@id/locationFragment"/>
+    </fragment>
+    <fragment android:id="@+id/locationFragment" android:name="com.example.beta.ui.LocationFragment"
+              android:label="fragment_location" tools:layout="@layout/fragment_location"/>
+    <fragment android:id="@+id/coursesTableFragment" android:name="com.example.beta.ui.CoursesTableFragment"
+              android:label="fragment_courses_table" tools:layout="@layout/fragment_courses_table">
+        <action android:id="@+id/action_coursesTableFragment_to_courseFragment" app:destination="@id/courseFragment"/>
+    </fragment>
+    <fragment android:id="@+id/recommendedFragment" android:name="com.example.beta.ui.RecommendedFragment"
+              android:label="fragment_recommended" tools:layout="@layout/fragment_recommended">
+        <action android:id="@+id/action_recommendedFragment_to_courseFragment" app:destination="@id/courseFragment"/>
+    </fragment>
+    <fragment android:id="@+id/profilesFragment" android:name="com.example.beta.ui.ProfilesFragment"
+              android:label="fragment_profiles" tools:layout="@layout/fragment_profiles"/>
+    <fragment android:id="@+id/settingsFragment" android:name="com.example.beta.ui.SettingsFragment"
+              android:label="fragment_settings" tools:layout="@layout/fragment_settings"/>
+    <fragment android:id="@+id/suggestionsFragment" android:name="com.example.beta.ui.SuggestionsFragment"
+              android:label="fragment_suggestions" tools:layout="@layout/fragment_suggestions"/>
+    <fragment android:id="@+id/coursesMenuFragment" android:name="com.example.beta.ui.CoursesMenuFragment"
+              android:label="fragment_courses_menu" tools:layout="@layout/fragment_courses_menu">
+        <action android:id="@+id/action_coursesMenuFragment_to_mapMenuFragment" app:destination="@id/mapMenuFragment"/>
+        <action android:id="@+id/action_coursesMenuFragment_to_rankingMenuFragment2"
+                app:destination="@id/rankingMenuFragment2"/>
+        <action android:id="@+id/action_coursesMenuFragment_to_coursesTableFragment"
+                app:destination="@id/coursesTableFragment"/>
+    </fragment>
+</navigation>

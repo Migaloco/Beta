@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/search_view"
+          android:icon="@drawable/ic_search_black_24dp"
+          android:title="@string/search"
+          app:actionViewClass="android.widget.SearchView" app:showAsAction="always"/>
+
+    <item
+            android:id="@id/suggestionsFragment"
+            android:icon="@drawable/ic_mail_black_24dp"
+            android:title="@string/suggestion" />
+
+
+    <item
+            android:id="@id/settingsFragment"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/settings" />
+</menu>
