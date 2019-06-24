@@ -24,4 +24,15 @@
     <string name="profiles">Profiles</string>
     <string name="suggestion">Suggestion</string>
     <string name="settings">Settings</string>
+    <string name="map_is_unavailable">Map is unavailable</string>
+    <string name="todo">TODO</string>
+    <string name="sintra_course">Sintra Course</string>
+    <string name="percurso">percurso</string>
+    <string name="iniciar">Iniciar</string>
+    <string name="rating_3_0">Rating : 3.0</string>
+    <string name="distance_5_7km">Distance : 5.7km</string>
+    <string name="difficulty">Difficulty</string>
+    <string name="time">Time</string>
+    <string name="people">People</string>
+    <string name="category">Category</string>
 </resources>

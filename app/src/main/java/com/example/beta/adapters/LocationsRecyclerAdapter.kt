@@ -5,28 +5,29 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beta.R
+import com.example.beta.data.LocationListing
 import com.example.beta.others.CustomViewHolder
-import kotlinx.android.synthetic.main.ranking_list_layout.view.*
+import kotlinx.android.synthetic.main.list_locations_layout.view.*
 
-class RankingRecyclerAdapter(val context: Context, val names: ArrayList<String>):RecyclerView.Adapter<CustomViewHolder>(){
+class LocationsRecyclerAdapter (val context: Context, val location: ArrayList<LocationListing>):
+    RecyclerView.Adapter<CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
 
         val layoutInflater = LayoutInflater.from(parent.context)
-        val cellForRow = layoutInflater.inflate(R.layout.ranking_list_layout, parent, false)
+        val cellForRow = layoutInflater.inflate(R.layout.list_locations_layout, parent, false)
         return CustomViewHolder(cellForRow)
     }
 
     override fun getItemCount(): Int {
-        return names.size
+        return location.size
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
 
-        val getName = names[position]
-        val rank = position + 1
+        val item = location[position]
 
-        holder.view.ranking_list_layout_rank.text = rank.toString()
-        holder.view.ranking_list_layout_name.text = getName
+        holder.view.fragment_list_locations_layout_photo.setImageResource(item.photo)
+        holder.view.fragment_list_locations_layout_name.text = item.name
     }
 }

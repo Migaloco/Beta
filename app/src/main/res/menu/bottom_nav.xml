@@ -15,7 +15,7 @@
         android:title="@string/ranking"/>
 
     <item
-            android:id="@id/profilesFragment"
+            android:id="@id/profileFragment"
             android:icon="@drawable/ic_person_black_24dp"
             android:title="@string/profiles" />
 </menu>

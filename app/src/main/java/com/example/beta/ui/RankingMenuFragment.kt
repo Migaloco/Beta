@@ -38,5 +38,6 @@ class RankingMenuFragment : Fragment() {
 
         fragment_ranking_menu_list.layoutManager = LinearLayoutManager(context)
         fragment_ranking_menu_list.adapter = RankingRecyclerAdapter(context!!, rankingList)
+
     }
 }

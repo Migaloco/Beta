@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto" android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" android:layout_marginStart="20dp" android:layout_marginTop="20dp"
+              android:layout_marginEnd="20dp">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="78dp">
+        <ImageView
+                android:layout_width="77dp"
+                android:layout_height="match_parent" app:srcCompat="@drawable/new_box" android:id="@+id/fragment_list_locations_layout_photo"
+        />
+        <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:id="@+id/fragment_list_locations_layout_name" android:textSize="24sp"
+                android:layout_marginStart="20dp" android:gravity="center_vertical"/>
+    </LinearLayout>
+</LinearLayout>

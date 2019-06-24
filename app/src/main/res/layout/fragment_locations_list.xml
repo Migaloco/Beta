@@ -3,11 +3,8 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context=".ui.MapMenuFragment">
-
-    <com.google.android.gms.maps.MapView
+             tools:context=".ui.LocationsListFragment">
+    <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/appMapMenu"/>
-
+            android:layout_height="match_parent"/>
 </FrameLayout>

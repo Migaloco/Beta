@@ -1,7 +1,15 @@
 package com.example.beta.ui
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -9,35 +17,153 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.example.beta.R
+import com.example.beta.others.HttpRequest
+import org.json.JSONObject
+import java.net.URL
 
 class RegisterFragment : Fragment() {
+
+    var mAuthTask: AsyncTaskSignIn? = null
+    var user : JSONObject? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_register, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val password = view.findViewById<EditText>(R.id.fragment_register_password).text
-        val confpass = view.findViewById<EditText>(R.id.fragment_register_conf_password).text
+        user = JSONObject()
+
+        var username = view.findViewById<EditText>(R.id.fragment_register_username).text
+        var email = view.findViewById<EditText>(R.id.fragment_register_email).text
+        var password = view.findViewById<EditText>(R.id.fragment_register_password).text
+        var telefone = view.findViewById<EditText>(R.id.fragment_register_phone).text
+        var confpass = view.findViewById<EditText>(R.id.fragment_register_conf_password).text
 
         view.findViewById<View>(R.id.fragment_register_button).setOnClickListener {
 
-            if(view.findViewById<EditText>(R.id.fragment_register_username).text.isEmpty()
-                || view.findViewById<EditText>(R.id.fragment_register_email).text.isEmpty()
-                || password.isEmpty()
-                || confpass.isEmpty()
-                ){
+            if(username.isEmpty() || email.isEmpty() || password.isEmpty() || confpass.isEmpty()){
 
                 Toast.makeText(context, "Missing information", Toast.LENGTH_SHORT).show()
 
-            }else if(password != confpass) Toast.makeText(context, "The passwords are different", Toast.LENGTH_SHORT).show()
+            }else if(!password.toString().equals(confpass.toString())) Toast.makeText(context, "The passwords are different", Toast.LENGTH_SHORT).show()
 
-            else findNavController(this).navigate(R.id.logInFragment)
+            else{
+
+                user!!.accumulate("username", username.toString())
+                user!!.accumulate("password", password.toString())
+                user!!.accumulate("mail", email.toString())
+                user!!.accumulate("telemovel", telefone.toString())
+
+                attemptSignIn()
+
+                username.clear()
+                email.clear()
+                password.clear()
+                telefone.clear()
+                confpass.clear()
+            }
         }
+    }
+
+    private fun attemptSignIn() {
+
+        if (mAuthTask != null) {
+            return
+        }
+
+        mAuthTask = AsyncTaskSignIn()
+        mAuthTask!!.execute(null)
+
+        val res = mAuthTask!!.get()
+
+        when(res) {
+            "200" -> {
+
+                Toast.makeText(context, "Successful register", Toast.LENGTH_SHORT).show()
+
+                findNavController(this).navigate(R.id.logInFragment)
+            }
+            else -> {
+                when (res) {
+
+                    "400" -> Toast.makeText(context, "User already exists", Toast.LENGTH_SHORT).show()
+                    "500" -> Toast.makeText(context, "The server is fried", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu){
+
+        val search = menu.findItem(R.id.search_vie)
+        val suggestions = menu.findItem(R.id.suggestionsFragment)
+        val settings = menu.findItem(R.id.settingsFragment)
+
+        search?.isVisible = false
+        suggestions?.isVisible = false
+        settings?.isVisible = false
+    }
+
+    ////////////////////////////////////Internet/////////////////////////////////////////////
+
+    @SuppressLint("StaticFieldLeak")
+    inner class AsyncTaskSignIn internal constructor() :
+        AsyncTask<Void, Void, String>() {
+
+        override fun onPreExecute() {
+
+            if (!isNetworkConnected()) {
+
+                cancel(true)
+            }
+        }
+
+        override fun doInBackground(vararg params: Void): String? {
+            return try {
+
+                HttpRequest().doHTTP(URL("https://turisnova.appspot.com/rest/register/user"), user!!, "POST")?.get(0)
+
+            } catch (e: Exception) {
+                e.toString()
+            }
+        }
+
+        override fun onPostExecute(success: String?) {}
+
+        override fun onCancelled() {
+            mAuthTask = null
+        }
+    }
+
+    fun isNetworkConnected(): Boolean {
+
+        val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        if (cm != null) {
+            if (Build.VERSION.SDK_INT < 23) {
+                val ni = cm.activeNetworkInfo
+
+                if (ni != null) {
+                    return ni.isConnected && (ni.type == ConnectivityManager.TYPE_WIFI || ni.type == ConnectivityManager.TYPE_MOBILE)
+                }
+            } else {
+                val n = cm.activeNetwork
+
+                if (n != null) {
+                    val nc = cm.getNetworkCapabilities(n)
+
+                    return nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || nc.hasTransport(
+                        NetworkCapabilities.TRANSPORT_WIFI
+                    )
+                }
+            }
+        }
+        return false
     }
 }

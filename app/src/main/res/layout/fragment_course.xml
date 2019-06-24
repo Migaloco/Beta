@@ -4,11 +4,88 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context=".ui.CourseFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment"/>
+            android:layout_height="match_parent">
 
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:text="@string/sintra_course"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/fragment_course_name"
+                    android:textSize="26sp" android:paddingTop="30dp" android:gravity="center"
+                    android:paddingBottom="10dp"/>
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:paddingTop="10dp">
+                <Button
+                        android:text="@string/percurso"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/button"
+                        android:padding="5dp" android:layout_weight="1" android:layout_marginStart="30dp"
+                        android:layout_marginEnd="30dp"/>
+                <Button
+                        android:text="@string/iniciar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/button2"
+                        android:layout_weight="1" android:layout_marginStart="30dp" android:layout_marginEnd="30dp"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_marginTop="20dp"
+                    android:layout_marginStart="30dp" android:layout_marginEnd="30dp">
+                <TextView
+                        android:text="@string/rating_3_0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/fragment_course_rating"
+                        android:textSize="18sp" android:layout_marginEnd="20dp" android:layout_weight="1"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/fragment_course_distance"
+                        android:text="@string/distance_5_7km" android:textSize="18sp"
+                        android:layout_marginStart="20dp" android:layout_weight="1" android:gravity="end"
+                />
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp" android:layout_marginTop="20dp">
+                <TextView
+                        android:text="@string/difficulty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/fragment_course_difficulty"
+                        android:layout_weight="1" android:textSize="18sp"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:layout_marginTop="20dp"
+                    android:layout_marginStart="30dp" android:layout_marginEnd="30dp">
+                <TextView
+                        android:text="@string/category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/fragment_course_catefory1"
+                        android:textSize="18sp" android:layout_marginEnd="15dp" android:background="#2196F3"/>
+                <TextView
+                        android:text="@string/category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/fragment_course_category2"
+                        android:textSize="18sp" android:background="#2196F3"/>
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/fragment_course_photos"
+                    android:layout_marginTop="20dp"/>
+            <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/fragment_course_others"
+                    android:layout_marginTop="20dp"/>
+        </LinearLayout>
+
+    </ScrollView>
 </FrameLayout>
