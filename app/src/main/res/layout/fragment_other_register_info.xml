@@ -1,14 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".OtherRegisterInfoFragment">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:orientation="vertical"
+              android:layout_height="match_parent"
+              tools:context=".ui.OtherRegisterInfoFragment" android:gravity="center"
+              android:background="@drawable/green_background">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment"/>
-
-</FrameLayout>
+            android:text="Register"
+            android:layout_width="173dp"
+            android:layout_height="40dp" android:id="@+id/fragment_other_register_info_title" android:textSize="30sp" android:gravity="center"
+            android:layout_marginBottom="20dp" android:layout_marginTop="5dp"
+            android:fontFamily="@font/roboto_medium_italic" android:textColor="#FFFFFF"/>
+    <TextView
+            android:text="Please enter the following data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/fragment_other_register_info_description" android:layout_margin="20dp"
+            android:fontFamily="@font/roboto_medium_italic" android:textColor="#FFFFFF" android:textSize="20sp"/>
+    <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:ems="10"
+            android:id="@+id/fragment_other_register_info_email"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/fragment_register_info"
+            app:layout_constraintHorizontal_bias="0.496"
+            app:layout_constraintVertical_bias="0.0" android:hint="Email"
+            android:fontFamily="@font/roboto_medium_italic" android:textColor="#000000"
+            android:background="@drawable/white_background" android:paddingStart="20dp"/>
+    <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/fragment_other_register_info_role" android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp" android:layout_marginBottom="10dp" android:hint="Role(Public/Private)"
+            android:textColor="#000000" android:fontFamily="@font/roboto_medium_italic"
+            android:background="@drawable/white_background" android:paddingStart="20dp"/>
+    <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:ems="10"
+            android:id="@+id/fragment_other_register_info_phone"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginBottom="30dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/fragment_other_register_info_email"
+            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintVertical_bias="0.008" android:hint="Mobile Number (optional)"
+            android:textColor="#000000" android:fontFamily="@font/roboto_medium_italic"
+            android:background="@drawable/white_background" android:paddingStart="20dp"/>
+    <Button
+            android:text="Next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/fragment_other_register_info_button"
+            android:background="@drawable/register_button" android:fontFamily="@font/roboto_medium_italic"
+            android:textSize="20sp" android:layout_marginBottom="5dp"/>
+</LinearLayout>

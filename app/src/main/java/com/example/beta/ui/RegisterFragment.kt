@@ -1,7 +1,11 @@
 package com.example.beta.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -10,16 +14,23 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.example.beta.R
+import com.example.beta.frag_view_model.LoginViewModel
 import com.example.beta.others.HttpRequest
+import androidx.activity.addCallback
+import com.example.beta.frag_view_model.RegisterViewModel
 import org.json.JSONObject
 import java.net.URL
 
 class RegisterFragment : Fragment() {
 
-    var mAuthTask: AsyncTaskSignIn? = null
-    var user : JSONObject? = null
+    //var mAuthTask: AsyncTaskSignIn? = null
+    //var user : JSONObject? = null
+    //private val loginViewModel: LoginViewModel by activityViewModels()
+    private val registrationViewModel: RegisterViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,24 +43,24 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        user = JSONObject()
+        //user = JSONObject()
 
-        var username = view.findViewById<EditText>(R.id.fragment_register_username).text
-        var email = view.findViewById<EditText>(R.id.fragment_register_email).text
-        var password = view.findViewById<EditText>(R.id.fragment_register_password).text
-        var telefone = view.findViewById<EditText>(R.id.fragment_register_phone).text
-        var confpass = view.findViewById<EditText>(R.id.fragment_register_conf_password).text
+        val navController = findNavController(this)
+
+        val username = view.findViewById<EditText>(R.id.fragment_register_username).text
+        val password = view.findViewById<EditText>(R.id.fragment_register_password).text
+        val confpass = view.findViewById<EditText>(R.id.fragment_register_conf_password).text
 
         view.findViewById<View>(R.id.fragment_register_button).setOnClickListener {
 
-            if(username.isEmpty() || email.isEmpty() || password.isEmpty() || confpass.isEmpty()){
+            if(username.isEmpty() || password.isEmpty() || confpass.isEmpty()){
 
                 Toast.makeText(context, "Missing information", Toast.LENGTH_SHORT).show()
 
-            }else if(!password.toString().equals(confpass.toString())) Toast.makeText(context, "The passwords are different", Toast.LENGTH_SHORT).show()
+            }else if(password.toString() != confpass.toString()) Toast.makeText(context, "The passwords are different", Toast.LENGTH_SHORT).show()
 
             else{
-
+                /*
                 user!!.accumulate("username", username.toString())
                 user!!.accumulate("password", password.toString())
                 user!!.accumulate("mail", email.toString())
@@ -63,10 +74,37 @@ class RegisterFragment : Fragment() {
                 password.clear()
                 telefone.clear()
                 confpass.clear()
+                */
+
+                registrationViewModel.createAccountAndLogin(username.toString(), password.toString(), confpass.toString())
             }
+        }
+
+        registrationViewModel.registrationState.observe(
+            viewLifecycleOwner, Observer { state ->
+                if (state == RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED) {
+
+                    // Here we authenticate with the token provided by the ViewModel
+                    // then pop back to the profie_fragment, where the user authentication
+                    // status will be tested and should be authenticated.
+
+                    //loginViewModel.authenticate(authToken)
+                    navController.popBackStack(R.id.coursesMenuFragment, false)
+                }
+                if(state == RegisterViewModel.RegistrationState.REGISTRATION_FAILED){
+
+                    Toast.makeText(context, "Registration failed", Toast.LENGTH_LONG).show()
+                }
+            }
+        )
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            registrationViewModel.userCancelledRegistration()
+            navController.popBackStack(R.id.logInFragment, false)
         }
     }
 
+    /*
     private fun attemptSignIn() {
 
         if (mAuthTask != null) {
@@ -93,7 +131,7 @@ class RegisterFragment : Fragment() {
                 }
             }
         }
-    }
+    }*/
 
     override fun onPrepareOptionsMenu(menu: Menu){
 
@@ -108,6 +146,7 @@ class RegisterFragment : Fragment() {
 
     ////////////////////////////////////Internet/////////////////////////////////////////////
 
+    /*
     @SuppressLint("StaticFieldLeak")
     inner class AsyncTaskSignIn internal constructor() :
         AsyncTask<Void, Void, String>() {
@@ -135,21 +174,29 @@ class RegisterFragment : Fragment() {
         override fun onCancelled() {
             mAuthTask = null
         }
-    }
+    }*/
 
     fun isNetworkConnected(): Boolean {
 
-        return HttpRequest().isNetworkConnected(context!!)
-    }
-}
+        val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-class OtherRegisterInfoFragment : Fragment() {
+        if (Build.VERSION.SDK_INT < 23) {
+            val ni = cm.activeNetworkInfo
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_other_register_info, container, false)
+            if (ni != null) {
+                return ni.isConnected && (ni.type == ConnectivityManager.TYPE_WIFI || ni.type == ConnectivityManager.TYPE_MOBILE)
+            }
+        } else {
+            val n = cm.activeNetwork
+
+            if (n != null) {
+                val nc = cm.getNetworkCapabilities(n)
+
+                return nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || nc.hasTransport(
+                    NetworkCapabilities.TRANSPORT_WIFI
+                )
+            }
+        }
+        return false
     }
 }

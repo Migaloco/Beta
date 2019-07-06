@@ -25,6 +25,7 @@ class LoginViewModel : ViewModel() {
         // In this example, the user is always unauthenticated when MainActivity is launched
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
         token = JSONObject()
+        user = JSONObject()
     }
 
     fun refuseAuthentication() {
@@ -62,7 +63,7 @@ class LoginViewModel : ViewModel() {
 
         override fun onPreExecute() {
 
-            if (!LogInFragment().isNetworkConnected()) {
+            if (false) {
 
                 cancel(true)
             }

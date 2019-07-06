@@ -12,16 +12,15 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.example.beta.R
 import java.net.URL
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import androidx.activity.addCallback
-import androidx.core.app.ActivityCompat.recreate
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation.findNavController
 import com.example.beta.frag_view_model.LoginViewModel
 import com.example.beta.others.HttpRequest
 import com.google.android.material.snackbar.Snackbar
@@ -50,7 +49,7 @@ class LogInFragment : Fragment() {
 
         //user = JSONObject()
 
-        val navController = findNavController(this)
+        val navController = findNavController(view)
 
         view.findViewById<View>(R.id.fragment_login_button).setOnClickListener {
 
@@ -58,10 +57,7 @@ class LogInFragment : Fragment() {
             val pass = view.findViewById<EditText>(R.id.fragment_login_password).text
 
             if (username.isEmpty() || pass.isEmpty()) {
-
                 Toast.makeText(context, "Missing username or password", Toast.LENGTH_SHORT).show()
-
-
             } else {
 
                 viewModel.authenticate(username.toString(), pass.toString())
@@ -69,7 +65,7 @@ class LogInFragment : Fragment() {
         }
 
         view.findViewById<View>(R.id.fragment_login_register).setOnClickListener {
-            navController.navigate(R.id.registerFragment)
+            navController.navigate(R.id.otherRegisterInfoFragment)
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -170,8 +166,27 @@ class LogInFragment : Fragment() {
     }
 
 */
-    fun isNetworkConnected(): Boolean {
+fun isNetworkConnected(): Boolean {
 
-        return HttpRequest().isNetworkConnected(context!!)
+    val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    if (Build.VERSION.SDK_INT < 23) {
+        val ni = cm.activeNetworkInfo
+
+        if (ni != null) {
+            return ni.isConnected && (ni.type == ConnectivityManager.TYPE_WIFI || ni.type == ConnectivityManager.TYPE_MOBILE)
+        }
+    } else {
+        val n = cm.activeNetwork
+
+        if (n != null) {
+            val nc = cm.getNetworkCapabilities(n)
+
+            return nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || nc.hasTransport(
+                NetworkCapabilities.TRANSPORT_WIFI
+            )
+        }
     }
+    return false
+}
 }
