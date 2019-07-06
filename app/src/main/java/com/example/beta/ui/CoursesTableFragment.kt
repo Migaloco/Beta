@@ -2,25 +2,24 @@ package com.example.beta.ui
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.navigation.NavArgs
 import androidx.annotation.RequiresApi
-import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.beta.data.ExampleCourses
 import com.example.beta.R
 import com.example.beta.adapters.CoursesRecyclerAdapter
-import kotlinx.android.synthetic.main.fragment_courses_menu.*
+import com.example.beta.database.view_model.CoursesViewModel
 
 import kotlinx.android.synthetic.main.fragment_courses_table.*
 
 class CoursesTableFragment : Fragment() {
 
+    private lateinit var coursesViewModel: CoursesViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,10 +35,15 @@ class CoursesTableFragment : Fragment() {
 
         fragment_courses_table_categorie.text = arguments?.getString("name")
 
-        val list = ExampleCourses().getExamples()
-
-
+        val adapter = CoursesRecyclerAdapter(context!!)
         fragment_courses_table_list.layoutManager = LinearLayoutManager(context)
-        fragment_courses_table_list.adapter = CoursesRecyclerAdapter(context!!, list)
+        fragment_courses_table_list.adapter = adapter
+
+        coursesViewModel = ViewModelProviders.of(this).get(CoursesViewModel::class.java)
+
+        coursesViewModel.allCourses.observe(this, Observer {
+
+            adapter.setCourses(it)
+        })
     }
 }

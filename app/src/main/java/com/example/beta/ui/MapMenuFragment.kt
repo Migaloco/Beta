@@ -1,5 +1,7 @@
 package com.example.beta.ui
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,15 +24,27 @@ import android.location.LocationManager
 import androidx.core.content.ContextCompat.getSystemService
 import android.content.DialogInterface
 import android.content.Context
+import android.location.Location
+import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.Constraints
 import androidx.constraintlayout.widget.Constraints.TAG
+import java.security.Permission
 
 
-class MapMenuFragment : Fragment(), OnMapReadyCallback {
+class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationClickListener,
+    GoogleMap.OnMyLocationButtonClickListener {
 
+    private val PERMISSIONS_REQUEST_ENABLE_GPS = 2
+    private val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 3
+
+    private var mLocationPermissionDenied = false
 
     private var mMapView: MapView? = null
+
+    private var gMap: GoogleMap? = null
 
     private val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
 
@@ -38,6 +52,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         return inflater.inflate(R.layout.fragment_map_menu, container, false)
     }
 
@@ -84,7 +99,42 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(map: GoogleMap) {
-        map.addMarker(MarkerOptions().position(LatLng(0.0, 0.0)).title("Marker"))
+
+        gMap = map
+
+        if(isMapsEnabled()) {
+
+            enableMyLocation()
+            gMap!!.setOnMyLocationButtonClickListener(this)
+            gMap!!.setOnMyLocationClickListener(this)
+        }
+    }
+
+    private fun enableMyLocation(){
+
+        if (ContextCompat.checkSelfPermission(
+                context!!,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            gMap!!.isMyLocationEnabled = true;
+
+        } else {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+            )
+        }
+    }
+
+    override fun onMyLocationClick(p0: Location) {
+        Toast.makeText(context, "Current location:\n" + p0, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onMyLocationButtonClick(): Boolean {
+
+        Toast.makeText(context, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+
+        return false
     }
 
     override fun onPause() {
@@ -100,5 +150,58 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback {
     override fun onLowMemory() {
         super.onLowMemory()
         mMapView!!.onLowMemory()
+    }
+
+    private fun buildAlertMessageNoGps() {
+        val builder = AlertDialog.Builder(activity!!)
+        builder.setMessage("This application requires GPS to work properly, do you want to enable it?")
+            .setCancelable(false)
+            .setPositiveButton("Yes", DialogInterface.OnClickListener { _, _ ->
+                val enableGpsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS)
+            })
+        val alert = builder.create()
+        alert.show()
+    }
+
+    private fun isMapsEnabled(): Boolean {
+
+        val manager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
+
+        if (!manager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            buildAlertMessageNoGps()
+            return false
+        }
+        return true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    enableMyLocation()
+                    refresh()
+                }else{
+                    mLocationPermissionDenied = true
+                }
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "onActivityResult: called.")
+
+        refresh()
+    }
+
+    fun refresh(){
+
+        val frag = fragmentManager!!.beginTransaction()
+        if (Build.VERSION.SDK_INT >= 26) frag.setReorderingAllowed(false)
+        frag.detach(this).attach(this).commit()
     }
 }

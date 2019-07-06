@@ -6,21 +6,28 @@
              tools:context=".ui.CourseFragment">
     <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent" android:background="@drawable/green_background">
 
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content" android:layout_marginBottom="20dp">
+            <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="161dp" android:id="@+id/fragment_course_photos"
+                    android:scaleType="fitXY"
+                    android:layout_marginTop="20dp"/>
             <TextView
                     android:text="@string/sintra_course"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/fragment_course_name"
-                    android:textSize="26sp" android:paddingTop="30dp" android:gravity="center"
-                    android:paddingBottom="10dp"/>
+                    android:textSize="30sp" android:gravity="center_vertical"
+                    android:layout_marginStart="20dp" android:layout_marginBottom="30dp"
+                    android:layout_marginTop="30dp" android:fontFamily="@font/roboto_medium_italic"
+                    android:textColor="#FFFFFF"/>
             <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:paddingTop="10dp">
+                    android:layout_height="wrap_content" android:paddingTop="10dp" android:layout_marginBottom="20dp">
                 <Button
                         android:text="@string/percurso"
                         android:layout_width="wrap_content"
@@ -34,57 +41,65 @@
                         android:layout_weight="1" android:layout_marginStart="30dp" android:layout_marginEnd="30dp"/>
             </LinearLayout>
             <LinearLayout
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" android:layout_marginTop="20dp"
-                    android:layout_marginStart="30dp" android:layout_marginEnd="30dp">
-                <TextView
-                        android:text="@string/rating_3_0"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/fragment_course_rating"
-                        android:textSize="18sp" android:layout_marginEnd="20dp" android:layout_weight="1"/>
+                    android:layout_height="match_parent">
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/fragment_course_distance"
-                        android:text="@string/distance_5_7km" android:textSize="18sp"
-                        android:layout_marginStart="20dp" android:layout_weight="1" android:gravity="end"
-                />
-            </LinearLayout>
-            <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp" android:layout_marginTop="20dp">
+                        android:text="Distancia: 5km" android:textSize="25sp"
+                        android:layout_marginStart="30dp" android:layout_weight="1" android:gravity="end"
+                        android:fontFamily="@font/roboto_medium_italic" android:layout_marginBottom="10dp"
+                        android:textColor="#FFFFFFFF"/>
                 <TextView
-                        android:text="@string/difficulty"
+                        android:text="Localização:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/fragment_course_location"
+                        android:textSize="25sp" android:layout_weight="1"
+                        android:fontFamily="@font/roboto_medium_italic" android:layout_marginStart="30dp"
+                        android:layout_marginBottom="10dp" android:textColor="#FFFFFFFF"/>
+                <TextView
+                        android:text="Dificuldade:"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/fragment_course_difficulty"
-                        android:layout_weight="1" android:textSize="18sp"/>
+                        android:layout_weight="1" android:textSize="25sp"
+                        android:fontFamily="@font/roboto_medium_italic" android:layout_marginStart="30dp"
+                        android:layout_marginBottom="10dp" android:textColor="#FFFFFFFF"/>
             </LinearLayout>
             <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:layout_marginTop="20dp"
-                    android:layout_marginStart="30dp" android:layout_marginEnd="30dp">
+                    android:layout_marginStart="30dp" android:layout_marginEnd="30dp" android:gravity="center">
                 <TextView
                         android:text="@string/category"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/fragment_course_catefory1"
-                        android:textSize="18sp" android:layout_marginEnd="15dp" android:background="#2196F3"/>
-                <TextView
-                        android:text="@string/category"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/fragment_course_category2"
-                        android:textSize="18sp" android:background="#2196F3"/>
+                        android:layout_width="109dp"
+                        android:layout_height="match_parent" android:id="@+id/fragment_course_catefory1"
+                        android:textSize="22sp" android:layout_marginEnd="15dp"
+                        android:fontFamily="@font/roboto_medium_italic" android:textColor="#FFFFFFFF"
+                        android:background="@drawable/register_button" android:gravity="center"/>
             </LinearLayout>
+            <TextView
+                    android:text="O que pode ver neste percurso?"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/fragment_course_question" android:layout_marginTop="20dp"
+                    android:textSize="22sp"
+                    android:fontFamily="@font/roboto_medium_italic" android:gravity="center"
+                    android:layout_marginBottom="20dp" android:textColor="#FFFFFFFF"/>
+            <TextView
+                    android:text="TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/fragment_course_description" android:layout_marginStart="10dp"
+                    android:textSize="18sp" android:layout_marginBottom="20dp" android:textColor="#FFFFFFFF"/>
+            <TextView
+                    android:text="Ver todas as atividades"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/fragment_courses_activities" android:textSize="20sp"
+                    android:fontFamily="@font/roboto_medium_italic" android:layout_marginStart="15dp"
+                    android:layout_marginBottom="20dp" android:textStyle="bold" android:textColor="#2196F3"/>
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/fragment_course_photos"
-                    android:layout_marginTop="20dp"/>
-            <androidx.recyclerview.widget.RecyclerView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/fragment_course_others"
-                    android:layout_marginTop="20dp"/>
+                    android:layout_height="match_parent" android:id="@+id/fragment_course_comments"/>
         </LinearLayout>
 
     </ScrollView>

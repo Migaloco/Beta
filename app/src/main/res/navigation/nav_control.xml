@@ -3,24 +3,15 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/nav_control"
-            app:startDestination="@id/logInFragment">
+            app:startDestination="@id/coursesMenuFragment">
 
     <fragment android:id="@+id/logInFragment"
               android:name="com.example.beta.ui.LogInFragment"
               tools:layout="@layout/fragment_log_in"
               android:label="fragment_log_in">
-        <action android:id="@+id/action_logInFragment_to_registerFragment"
-                app:destination="@id/registerFragment"/>
         <action android:id="@+id/action_logInFragment_to_coursesMenuFragment"
                 app:destination="@id/coursesMenuFragment"/>
-    </fragment>
-
-    <fragment android:id="@+id/registerFragment"
-              android:name="com.example.beta.ui.RegisterFragment"
-              android:label="fragment_register"
-              tools:layout="@layout/fragment_register">
-        <action android:id="@+id/action_registerFragment_to_logInFragment"
-                app:destination="@id/logInFragment"/>
+        <action android:id="@+id/action_logInFragment_to_navigation" app:destination="@id/navigation"/>
     </fragment>
 
     <fragment android:id="@+id/rankingMenuFragment2"
@@ -43,11 +34,9 @@
 
     <fragment android:id="@+id/courseFragment" android:name="com.example.beta.ui.CourseFragment"
               android:label="fragment_course" tools:layout="@layout/fragment_course">
-        <action android:id="@+id/action_courseFragment_to_locationFragment" app:destination="@id/locationFragment"/>
+        <action android:id="@+id/action_courseFragment_to_locationsListFragment"
+                app:destination="@id/locationsListFragment"/>
     </fragment>
-
-    <fragment android:id="@+id/locationFragment" android:name="com.example.beta.ui.LocationFragment"
-              android:label="fragment_location" tools:layout="@layout/fragment_location"/>
 
     <fragment android:id="@+id/coursesTableFragment" android:name="com.example.beta.ui.CoursesTableFragment"
               android:label="fragment_courses_table" tools:layout="@layout/fragment_courses_table">
@@ -60,13 +49,10 @@
 
     </fragment>
 
-    <fragment android:id="@+id/recommendedFragment" android:name="com.example.beta.ui.RecommendedFragment"
-              android:label="fragment_recommended" tools:layout="@layout/fragment_recommended">
-        <action android:id="@+id/action_recommendedFragment_to_courseFragment" app:destination="@id/courseFragment"/>
-    </fragment>
-
     <fragment android:id="@+id/profileFragment" android:name="com.example.beta.ui.ProfilesFragment"
-              android:label="fragment_profiles" tools:layout="@layout/fragment_profiles"/>
+              android:label="fragment_profiles" tools:layout="@layout/fragment_profiles">
+        <action android:id="@+id/action_profileFragment_to_personalInfo" app:destination="@id/personalInfo"/>
+    </fragment>
 
     <fragment android:id="@+id/settingsFragment" android:name="com.example.beta.ui.SettingsFragment"
               android:label="fragment_settings" tools:layout="@layout/fragment_settings"/>
@@ -83,12 +69,16 @@
                 app:destination="@id/coursesTableFragment"/>
     </fragment>
 
-    <fragment android:id="@+id/descriptionFragment" android:name="com.example.beta.ui.DescriptionFragment"
-              android:label="fragment_description" tools:layout="@layout/fragment_description"/>
-
-    <fragment android:id="@+id/commentsFragmment" android:name="com.example.beta.ui.CommentsFragmment"
-              android:label="fragment_comments_fragmment" tools:layout="@layout/fragment_comments_fragmment"/>
-
     <fragment android:id="@+id/locationsListFragment" android:name="com.example.beta.ui.LocationsListFragment"
               android:label="fragment_locations_list" tools:layout="@layout/fragment_locations_list"/>
+    <fragment android:id="@+id/personalInfo" android:name="com.example.beta.ui.PersonalInfo"
+              android:label="fragment_personal_info" tools:layout="@layout/fragment_personal_info"/>
+    <navigation android:id="@+id/navigation" app:startDestination="@id/registerFragment">
+        <fragment android:id="@+id/registerFragment"
+                  android:name="com.example.beta.ui.RegisterFragment"
+                  android:label="fragment_register"
+                  tools:layout="@layout/fragment_register"/>
+        <fragment android:id="@+id/otherRegisterInfoFragment" android:name="com.example.beta.OtherRegisterInfoFragment"
+                  android:label="fragment_other_register_info" tools:layout="@layout/fragment_other_register_info"/>
+    </navigation>
 </navigation>

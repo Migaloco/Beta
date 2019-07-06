@@ -18,16 +18,23 @@ import java.net.URL
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
+import androidx.activity.addCallback
 import androidx.core.app.ActivityCompat.recreate
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import com.example.beta.frag_view_model.LoginViewModel
 import com.example.beta.others.HttpRequest
+import com.google.android.material.snackbar.Snackbar
 import org.json.JSONException
 import org.json.JSONObject
 
 
 class LogInFragment : Fragment() {
 
-    var mLogInTask: AsyncTaskLogIn? = null
-    var user : JSONObject? = null
+    //var mLogInTask: AsyncTaskLogIn? = null
+    //var user : JSONObject? = null
+
+    private val viewModel: LoginViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +48,9 @@ class LogInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        user = JSONObject()
+        //user = JSONObject()
+
+        val navController = findNavController(this)
 
         view.findViewById<View>(R.id.fragment_login_button).setOnClickListener {
 
@@ -50,22 +59,30 @@ class LogInFragment : Fragment() {
 
             if (username.isEmpty() || pass.isEmpty()) {
 
-                    Toast.makeText(context, "Missing username or password", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Missing username or password", Toast.LENGTH_SHORT).show()
 
 
             } else {
 
-                user!!.accumulate("username", username.toString())
-                user!!.accumulate("password", pass.toString())
-
-                attemptLogIn()
+                viewModel.authenticate(username.toString(), pass.toString())
             }
         }
 
         view.findViewById<View>(R.id.fragment_login_register).setOnClickListener {
-
-            findNavController(this).navigate(R.id.registerFragment)
+            navController.navigate(R.id.registerFragment)
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            viewModel.refuseAuthentication()
+        }
+
+        viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
+            when (authenticationState) {
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> navController.popBackStack()
+                LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION ->
+                    Snackbar.make(view,"Wrong credentials", Snackbar.LENGTH_SHORT).show()
+            }
+        })
     }
 
     override fun onPrepareOptionsMenu(menu: Menu){
@@ -78,7 +95,7 @@ class LogInFragment : Fragment() {
         suggestions?.isVisible = false
         settings?.isVisible = false
     }
-
+/*
     private fun attemptLogIn() {
 
         if (mLogInTask != null) {
@@ -152,30 +169,9 @@ class LogInFragment : Fragment() {
         }
     }
 
-
+*/
     fun isNetworkConnected(): Boolean {
 
-        val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        if (cm != null) {
-            if (Build.VERSION.SDK_INT < 23) {
-                val ni = cm.activeNetworkInfo
-
-                if (ni != null) {
-                    return ni.isConnected && (ni.type == ConnectivityManager.TYPE_WIFI || ni.type == ConnectivityManager.TYPE_MOBILE)
-                }
-            } else {
-                val n = cm.activeNetwork
-
-                if (n != null) {
-                    val nc = cm.getNetworkCapabilities(n)
-
-                    return nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || nc.hasTransport(
-                        NetworkCapabilities.TRANSPORT_WIFI
-                    )
-                }
-            }
-        }
-        return false
+        return HttpRequest().isNetworkConnected(context!!)
     }
 }

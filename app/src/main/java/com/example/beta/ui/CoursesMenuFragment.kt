@@ -7,14 +7,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.beta.R
 import com.example.beta.adapters.CategoriesRecyclerAdapter
 import com.example.beta.data.CategoriesListing
+import com.example.beta.database.view_model.CategoriesViewModel
+import com.example.beta.frag_view_model.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_courses_menu.*
 
 class CoursesMenuFragment : Fragment() {
+
+    private lateinit var categoriesViewModel:CategoriesViewModel
+
+    private val viewModel: LoginViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,20 +37,31 @@ class CoursesMenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val listOfCategories = ArrayList<CategoriesListing>()
-        listOfCategories.add(CategoriesListing(R.drawable.account_group, "Populares"))
-        listOfCategories.add(CategoriesListing(R.drawable.new_box, "Novos"))
-        listOfCategories.add(CategoriesListing(R.drawable.ic_baseline_nature_24px, "Natureza"))
-        listOfCategories.add(CategoriesListing(R.drawable.bank_outline, "Cultural"))
-        listOfCategories.add(CategoriesListing(R.drawable.school, "Educacional"))
-        listOfCategories.add(CategoriesListing(R.drawable.food, "Gastronomia"))
-        listOfCategories.add(CategoriesListing(R.drawable.movie, "Entretenimento"))
-
         /*val dividerItem = DividerItemDecoration(fragment_courses_menu_list.context, DividerItemDecoration.VERTICAL)
         dividerItem.setDrawable(resources.getDrawable(R.drawable.recycler_view_divider, null))
         fragment_courses_menu_list.addItemDecoration(dividerItem)*/
 
+        val adapter = CategoriesRecyclerAdapter(context!!)
         fragment_courses_menu_list.layoutManager = LinearLayoutManager(context)
-        fragment_courses_menu_list.adapter = CategoriesRecyclerAdapter(context!!, listOfCategories)
+        fragment_courses_menu_list.adapter = adapter
+
+        val navController = NavHostFragment.findNavController(this)
+
+        categoriesViewModel = ViewModelProviders.of(this).get(CategoriesViewModel::class.java)
+
+        categoriesViewModel.allCategories.observe(this, Observer {
+
+            adapter.setCategoriesList(it)
+        })
+
+        viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
+            when (authenticationState) {
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> showWelcomeMessage()
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> navController.navigate(R.id.logInFragment)
+            }
+        })
     }
+
+    private fun showWelcomeMessage() {}
+
 }

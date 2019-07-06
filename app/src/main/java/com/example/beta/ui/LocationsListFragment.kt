@@ -18,6 +18,14 @@ class LocationsListFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_locations_list, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val activities = arguments?.getStringArrayList("activities")!!
+
+
+    }
+
 
     override fun onPrepareOptionsMenu(menu: Menu){
 

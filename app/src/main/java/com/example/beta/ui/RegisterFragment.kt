@@ -1,12 +1,7 @@
 package com.example.beta.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -60,6 +55,7 @@ class RegisterFragment : Fragment() {
                 user!!.accumulate("mail", email.toString())
                 user!!.accumulate("telemovel", telefone.toString())
 
+
                 attemptSignIn()
 
                 username.clear()
@@ -87,7 +83,7 @@ class RegisterFragment : Fragment() {
 
                 Toast.makeText(context, "Successful register", Toast.LENGTH_SHORT).show()
 
-                findNavController(this).navigate(R.id.logInFragment)
+                findNavController(this).popBackStack()
             }
             else -> {
                 when (res) {
@@ -143,27 +139,17 @@ class RegisterFragment : Fragment() {
 
     fun isNetworkConnected(): Boolean {
 
-        val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return HttpRequest().isNetworkConnected(context!!)
+    }
+}
 
-        if (cm != null) {
-            if (Build.VERSION.SDK_INT < 23) {
-                val ni = cm.activeNetworkInfo
+class OtherRegisterInfoFragment : Fragment() {
 
-                if (ni != null) {
-                    return ni.isConnected && (ni.type == ConnectivityManager.TYPE_WIFI || ni.type == ConnectivityManager.TYPE_MOBILE)
-                }
-            } else {
-                val n = cm.activeNetwork
-
-                if (n != null) {
-                    val nc = cm.getNetworkCapabilities(n)
-
-                    return nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || nc.hasTransport(
-                        NetworkCapabilities.TRANSPORT_WIFI
-                    )
-                }
-            }
-        }
-        return false
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_other_register_info, container, false)
     }
 }

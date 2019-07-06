@@ -9,12 +9,15 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beta.R
 import com.example.beta.data.CategoriesListing
+import com.example.beta.database.entities.CategoriesEntity
 import com.example.beta.others.CustomViewHolder
 import com.example.beta.ui.CoursesMenuFragmentDirections
 import com.example.beta.ui.CoursesTableFragmentDirections
 import kotlinx.android.synthetic.main.categories_list_layout.view.*
 
-class CategoriesRecyclerAdapter(val context: Context, val listOfCategories : ArrayList<CategoriesListing>): RecyclerView.Adapter<CustomViewHolder>(){
+class CategoriesRecyclerAdapter(val context: Context): RecyclerView.Adapter<CustomViewHolder>(){
+
+    var listOfCategories: List<CategoriesEntity> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
 
@@ -31,17 +34,23 @@ class CategoriesRecyclerAdapter(val context: Context, val listOfCategories : Arr
 
         val getCategory = listOfCategories.get(position)
 
-        holder.view.categories_list_layout_image.setImageResource(getCategory.image)
-        holder.view.categories_list_layout_text.text = getCategory.name
+        holder.view.categories_list_layout_image.setImageResource(getCategory.icon)
+        holder.view.categories_list_layout_text.text = getCategory.category
         holder.view.categories_list_layout_singleton.setOnClickListener {
 
-            val category = getCategory.name
+            val category = getCategory.category
 
             var bundle = Bundle()
             bundle.putString("name", category)
 
             Navigation.findNavController(holder.view).navigate(R.id.action_coursesMenuFragment_to_coursesTableFragment, bundle)
         }
+    }
+
+    internal fun setCategoriesList(list: List<CategoriesEntity>){
+
+        listOfCategories = list
+        notifyDataSetChanged()
     }
 
 }

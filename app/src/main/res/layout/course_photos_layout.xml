@@ -6,9 +6,9 @@
               android:layout_height="match_parent">
 
     <ImageView
-            android:layout_width="115dp"
-            android:layout_height="95dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:id="@+id/course_photos_layout_photo"
             android:contentDescription="@string/todo" app:srcCompat="@drawable/ic_person_black_24dp"
-            android:layout_margin="15dp"/>
+    />
 </LinearLayout>

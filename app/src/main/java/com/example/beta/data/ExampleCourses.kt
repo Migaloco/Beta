@@ -1,39 +1,57 @@
 package com.example.beta.data
 
 import com.example.beta.R
+import com.example.beta.database.converter.ListInt
+import com.example.beta.database.converter.ListString
+import com.example.beta.database.entities.CategoriesEntity
+import com.example.beta.database.entities.CoursesEnt
+import com.example.beta.database.entities.LocationsEntity
+import com.example.beta.database.entities.UsersEntity
 
 class ExampleCourses (){
 
-    fun getExamples():ArrayList<CoursesListing>{
 
-        val array = arrayListOf<CoursesListing>()
+    /*
+    Examples for the Courses
+     */
+    fun getExamplesCourses():List<CoursesEnt>{
+
+        val array = arrayListOf<CoursesEnt>()
 
         val photos = getPhotos()
 
         array.add(
-            CoursesListing("Midnight Fun", "Lisboa", "Neste percurso vamos explorar o lado de Lisboa"
-            , 2.0, 1.4, photos[0]))
+            CoursesEnt(
+                "Midnight Fun", "Lisboa", "Neste percurso vamos explorar o lado de Lisboa"
+                , 2.0, 1.4, ListInt(photos[0]), "Natureza", ListString(listOf("Pavilhao do Conhecimento", "Chiado"))
+            ))
 
         array.add(
-            CoursesListing("Explorar o Porto", "Porto", "Com este percurso o vai ficar a conhecer um lado"
-            , 1.6, 2.0, photos[1]))
+            CoursesEnt(
+                "Explorar o Porto", "Porto", "Com este percurso o vai ficar a conhecer um lado"
+                , 1.6, 2.0, ListInt(photos[1]), "Gastronomia", ListString(listOf("Oceanario", "Praça do Comercio"))))
 
         array.add(
-            CoursesListing("Recantos de Coimbra", "Coimbra", "Estás pronto para percorrer uma das cidades"
-            , 3.0, 2.1, photos[2]))
+            CoursesEnt(
+                "Recantos de Coimbra", "Coimbra", "Estás pronto para percorrer uma das cidades"
+                , 3.0, 2.1,  ListInt(photos[2]), "Cultural", ListString(listOf("Praça do Comercio", "Chiado"))
+            ))
 
         array.add(
-            CoursesListing("Prazer do Algarve", "Faro", "As praias do algarve escondem maravilhas rochosas"
-            , 2.5, 4.6, photos[3]))
+            CoursesEnt(
+                "Prazer do Algarve", "Faro", "As praias do algarve escondem maravilhas rochosas"
+                , 2.5, 4.6, ListInt(photos[3]), "Natureza", ListString(listOf("Praça do Comercio", "Pavilhao do Conhecimento"))))
 
         array.add(
-            CoursesListing("Descansar a Alentejano", "Beja", "Se estás farto da confusão da cidade, este é"
-                , 1.4, 4.0, photos[4]))
+            CoursesEnt(
+                "Descansar a Alentejano", "Beja", "Se estás farto da confusão da cidade, este é"
+                , 1.4, 4.0, ListInt(photos[4]), "Cultural", ListString(listOf("Chiado", "Oceanario"))
+            ))
 
         array.add(
-            CoursesListing("Conhecer Monsanto", "Lisboa", "Nada como estar numa floresta para fugir ao sufoco da cidade"
-                ,3.0, 3.7, photos[5])
-        )
+            CoursesEnt(
+                "Conhecer Monsanto", "Lisboa", "Nada como estar numa floresta para fugir ao sufoco da cidade"
+                , 3.0, 3.7, ListInt(photos[5]), "Cultural", ListString(listOf("Pavilhao do Conhecimento", "Oceanario"))))
 
         return array
     }
@@ -66,5 +84,65 @@ class ExampleCourses (){
             R.drawable.monsanto_2)
 
         return listOf(lisboa, porto, coimbra, algarve, alentejo, monsanto)
+    }
+
+    /*
+    Returns examples of locations to use on app
+     */
+    fun getExamplesLocations():List<LocationsEntity>{
+
+        val arrayList = arrayListOf<LocationsEntity>()
+
+        val array = getPhotos()
+
+        arrayList.add(
+            LocationsEntity("Pavilhao do Conhecimento", "Here you will explore how fun science can be"
+            , array[0][0]))
+
+        arrayList.add(
+            LocationsEntity("Praça do Comercio", "A beutiful place in downtown Lisbon that is a must see"
+            ,array[1][0]))
+
+        arrayList.add(
+            LocationsEntity("Chiado", "A place filled with quality stores and restaurants"
+            , array[0][1]))
+
+        arrayList.add(
+            LocationsEntity("Oceanario","Come see the fishes"
+            , array[2][1]))
+
+        return arrayList
+    }
+
+
+    /*
+    Returns examples of users to use on app
+     */
+    fun getExamplesUsers():List<UsersEntity>{
+
+        val arrayList = arrayListOf<UsersEntity>()
+
+        arrayList.add(UsersEntity("Miguel", 400, ListString(emptyList()), ListString(emptyList())))
+        arrayList.add(UsersEntity("Jhordy", 200, ListString(emptyList()), ListString(emptyList())))
+        arrayList.add(UsersEntity("Ricardo", 200, ListString(emptyList()), ListString(emptyList())))
+        arrayList.add(UsersEntity("Madeira", 100, ListString(emptyList()), ListString(emptyList())))
+
+        return arrayList
+    }
+
+    /*
+    Returns examples of cateogries to use on app
+     */
+    fun getExamplesCategories():List<CategoriesEntity>{
+
+        val listOfCategories = arrayListOf<CategoriesEntity>()
+
+        listOfCategories.add(CategoriesEntity("Natureza", R.drawable.ic_baseline_nature_24px))
+        listOfCategories.add(CategoriesEntity("Cultural", R.drawable.bank_outline))
+        listOfCategories.add(CategoriesEntity("Educacional", R.drawable.school))
+        listOfCategories.add(CategoriesEntity("Gastronomia", R.drawable.food))
+        listOfCategories.add(CategoriesEntity("Entretenimento", R.drawable.movie))
+
+        return listOfCategories
     }
 }
