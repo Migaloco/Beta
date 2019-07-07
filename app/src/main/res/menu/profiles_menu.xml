@@ -3,7 +3,11 @@
 
     <item android:title="Edit"
           android:icon="@drawable/ic_baseline_edit_24px"
-          android:id="@+id/profiles_menu_edit" app:showAsAction="ifRoom"/>
-    <item android:title="Save" android:id="@+id/profiles_menu_save" android:icon="@drawable/ic_baseline_check_24px"
+          android:id="@+id/profiles_menu_edit"
+          app:showAsAction="ifRoom"/>
+
+    <item android:title="Save"
+          android:id="@+id/profiles_menu_save"
+          android:icon="@drawable/ic_baseline_check_24px"
           app:showAsAction="ifRoom"/>
 </menu>

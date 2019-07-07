@@ -3,12 +3,17 @@ package com.example.beta.ui
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
@@ -19,6 +24,8 @@ import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 import com.example.beta.R
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,9 +55,37 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "ResourceNotFound", Toast.LENGTH_SHORT).show()
             }
         }
+    }
 
-        var listCt: List<String> = listOf("Gastronomia","Populares", "Novos", "Relevantes", "Culturais", "Familiares", "Grátis", "Natureza", "Desportivo", "Educacional")
 
+    private fun buildAlertMessageLeave() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Are you sure you want to exit?")
+            .setCancelable(true)
+            .setPositiveButton("Yes", DialogInterface.OnClickListener { _, _ ->
+
+                //Enviar pedido logout ao servidor
+
+                val editor = this.getSharedPreferences("AUTHENTICATION", 0).edit()
+                editor.clear()
+                editor.apply()
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    finishAndRemoveTask()
+                }else{
+                    appExit()
+                }
+            })
+        val alert = builder.create()
+        alert.show()
+    }
+
+    fun appExit() {
+        this.finish()
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 
     private fun setupBottomNavMenu(navController: NavController) {
@@ -82,6 +117,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId){
+            R.id.logout -> buildAlertMessageLeave()
+        }
 
         return onNavDestinationSelected(item, findNavController(findViewById(R.id.my_nav_host_fragment)))
                 || super.onOptionsItemSelected(item)

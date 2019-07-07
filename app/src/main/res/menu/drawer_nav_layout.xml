@@ -11,9 +11,11 @@
             android:icon="@drawable/ic_mail_black_24dp"
             android:title="@string/suggestion" />
 
-
     <item
             android:id="@id/settingsFragment"
             android:icon="@drawable/ic_settings_black_24dp"
             android:title="@string/settings" />
+
+    <item android:id="@+id/logout"
+            android:title="Logout"/>
 </menu>

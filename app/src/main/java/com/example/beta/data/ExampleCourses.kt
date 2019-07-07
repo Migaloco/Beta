@@ -22,15 +22,15 @@ class ExampleCourses (){
 
         array.add(
             CoursesEnt(
-                "Midnight Fun", "Lisboa", "Neste percurso vamos explorar o lado de Lisboa"
+                "fun", "Lisboa", "Neste percurso vamos explorar o lado de Lisboa"
                 , 2.0, 1.4, ListInt(photos[0]), "Natureza", ListString(listOf("Pavilhao do Conhecimento", "Chiado"))
             ))
 
         array.add(
             CoursesEnt(
-                "Explorar o Porto", "Porto", "Com este percurso o vai ficar a conhecer um lado"
+                "porto", "Porto", "Com este percurso o vai ficar a conhecer um lado"
                 , 1.6, 2.0, ListInt(photos[1]), "Gastronomia", ListString(listOf("Oceanario", "Praça do Comercio"))))
-
+        /*
         array.add(
             CoursesEnt(
                 "Recantos de Coimbra", "Coimbra", "Estás pronto para percorrer uma das cidades"
@@ -51,8 +51,7 @@ class ExampleCourses (){
         array.add(
             CoursesEnt(
                 "Conhecer Monsanto", "Lisboa", "Nada como estar numa floresta para fugir ao sufoco da cidade"
-                , 3.0, 3.7, ListInt(photos[5]), "Cultural", ListString(listOf("Pavilhao do Conhecimento", "Oceanario"))))
-
+                , 3.0, 3.7, ListInt(photos[5]), "Cultural", ListString(listOf("Pavilhao do Conhecimento", "Oceanario"))))*/
         return array
     }
 

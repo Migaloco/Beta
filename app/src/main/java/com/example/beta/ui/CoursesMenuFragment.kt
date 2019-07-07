@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -42,10 +43,10 @@ class CoursesMenuFragment : Fragment() {
         fragment_courses_menu_list.addItemDecoration(dividerItem)*/
 
         val adapter = CategoriesRecyclerAdapter(context!!)
+
         fragment_courses_menu_list.layoutManager = LinearLayoutManager(context)
         fragment_courses_menu_list.adapter = adapter
 
-        val navController = NavHostFragment.findNavController(this)
 
         categoriesViewModel = ViewModelProviders.of(this).get(CategoriesViewModel::class.java)
 
@@ -55,13 +56,31 @@ class CoursesMenuFragment : Fragment() {
         })
 
         viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
+
             when (authenticationState) {
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> showWelcomeMessage()
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> navController.navigate(R.id.logInFragment)
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> checkToken()
             }
         })
     }
 
-    private fun showWelcomeMessage() {}
+    private fun showWelcomeMessage() {
 
+        Toast.makeText(context, "Welcome!", Toast.LENGTH_LONG).show()
+    }
+
+    private fun checkToken(){
+
+        val navController = NavHostFragment.findNavController(this)
+        val settings = context!!.getSharedPreferences("AUTHENTICATION", 0)
+        val token = settings.getString("tokenID", null)
+
+        when(token){
+            null -> navController.navigate(R.id.logInFragment)
+            else -> {
+                viewModel.authenticateWithToken()
+                showWelcomeMessage()
+            }
+        }
+    }
 }

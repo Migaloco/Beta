@@ -31,6 +31,10 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.Constraints
 import androidx.constraintlayout.widget.Constraints.TAG
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLngBounds
 import java.security.Permission
 
 
@@ -41,10 +45,10 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
     private val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 3
 
     private var mLocationPermissionDenied = false
-
-    private var mMapView: MapView? = null
-
-    private var gMap: GoogleMap? = null
+    private lateinit var mMapView: MapView
+    private lateinit var gMap: GoogleMap
+    private lateinit var inicialBound: LatLngBounds
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
 
@@ -66,9 +70,11 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         }
 
         mMapView = view.findViewById(R.id.appMapMenu)
-        mMapView!!.onCreate(mapViewBundle)
+        mMapView.onCreate(mapViewBundle)
 
-        mMapView!!.getMapAsync(this)
+        mMapView.getMapAsync(this)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
     }
 
      override fun onSaveInstanceState(outState: Bundle) {
@@ -80,22 +86,22 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
             mapViewBundle = Bundle()
             outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle)
         }
-        mMapView!!.onSaveInstanceState(mapViewBundle)
+        mMapView.onSaveInstanceState(mapViewBundle)
     }
 
     override fun onResume() {
         super.onResume()
-        mMapView!!.onResume()
+        mMapView.onResume()
     }
 
     override fun onStart() {
         super.onStart()
-        mMapView!!.onStart()
+        mMapView.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        mMapView!!.onStop()
+        mMapView.onStop()
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -105,9 +111,46 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         if(isMapsEnabled()) {
 
             enableMyLocation()
-            gMap!!.setOnMyLocationButtonClickListener(this)
-            gMap!!.setOnMyLocationClickListener(this)
+            gMap.setOnMyLocationButtonClickListener(this)
+            gMap.setOnMyLocationClickListener(this)
         }
+
+        setCameraView()
+    }
+
+    private fun setCameraView(){
+
+        val loc = getLastKnownLocation()
+
+        val bottomBoundary = loc.latitude - .1
+        val leftBoundary = loc.longitude -.1
+        val topBoundary = loc.latitude + .1
+        val rightBoundary = loc.longitude + .1
+
+        inicialBound = LatLngBounds(LatLng(bottomBoundary, leftBoundary), LatLng(topBoundary, rightBoundary))
+
+        gMap.moveCamera(CameraUpdateFactory.newLatLngBounds(inicialBound, 0))
+    }
+
+    private fun getLastKnownLocation():Location{
+
+        var loc:Location? = null
+
+        if (ContextCompat.checkSelfPermission(
+                context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            val fu = fusedLocationClient.lastLocation
+
+            fusedLocationClient.lastLocation.addOnSuccessListener {
+
+                 loc = it
+            }.addOnFailureListener {
+
+                Log.d(TAG, "im here")
+            }
+        }
+
+        return loc!!
     }
 
     private fun enableMyLocation(){
@@ -116,7 +159,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
                 context!!,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            gMap!!.isMyLocationEnabled = true;
+            gMap.isMyLocationEnabled = true;
 
         } else {
             requestPermissions(

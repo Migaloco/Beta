@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
@@ -20,10 +21,13 @@ import com.google.gson.Gson
 import androidx.lifecycle.viewModelScope
 import androidx.room.RoomDatabase
 import com.example.beta.database.dao.CategoriesDao
+import com.example.beta.frag_view_model.LoginViewModel
 import com.example.beta.others.ConverterForUI
 import kotlinx.android.synthetic.main.fragment_course.*
 
 class CourseFragment : Fragment() {
+
+    private lateinit var viewModel: CoursesViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +39,15 @@ class CourseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        var coursentity:CoursesEnt? = null
+
+        viewModel = ViewModelProviders.of(this).get(CoursesViewModel::class.java)
+
+        viewModel.singleCourse.observe(this, Observer {
+
+            coursentity = it
+        })
+
         val course = arguments?.getString("course")!!
         val location = arguments?.getString("location")!!
         val difficulty = arguments?.getDouble("difficulty")!!
@@ -43,6 +56,8 @@ class CourseFragment : Fragment() {
         val description = arguments?.getString("description")!!
         val photos = ConverterForUI().listStringToListInt(arguments?.getStringArrayList("photos")!!)
         val activities = arguments?.getStringArrayList("activities")!!
+
+        viewModel.getCourse(course)
 
         val adapter = CoursePhotosRecyclerAdapter(context!!, photos)
         fragment_course_photos.adapter = adapter

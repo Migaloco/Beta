@@ -16,6 +16,7 @@ import com.example.beta.R
 import java.net.URL
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.JsonToken
 import android.util.Log
 import androidx.activity.addCallback
 import androidx.fragment.app.activityViewModels
@@ -23,12 +24,13 @@ import androidx.lifecycle.Observer
 import androidx.navigation.Navigation.findNavController
 import com.example.beta.frag_view_model.LoginViewModel
 import com.example.beta.others.HttpRequest
+import com.example.beta.others.IdCallback
 import com.google.android.material.snackbar.Snackbar
 import org.json.JSONException
 import org.json.JSONObject
 
 
-class LogInFragment : Fragment() {
+class LogInFragment : Fragment(), IdCallback {
 
     //var mLogInTask: AsyncTaskLogIn? = null
     //var user : JSONObject? = null
@@ -60,7 +62,7 @@ class LogInFragment : Fragment() {
                 Toast.makeText(context, "Missing username or password", Toast.LENGTH_SHORT).show()
             } else {
 
-                viewModel.authenticate(username.toString(), pass.toString())
+                viewModel.authenticate(username.toString(), pass.toString(), this)
             }
         }
 
@@ -86,10 +88,20 @@ class LogInFragment : Fragment() {
         val search = menu.findItem(R.id.search_vie)
         val suggestions = menu.findItem(R.id.suggestionsFragment)
         val settings = menu.findItem(R.id.settingsFragment)
+        val logout = menu.findItem(R.id.logout)
 
         search?.isVisible = false
         suggestions?.isVisible = false
         settings?.isVisible = false
+        logout?.isVisible = false
+    }
+
+    override fun onUserLogeedIn(token: JSONObject) {
+
+        val settings = context!!.getSharedPreferences("AUTHENTICATION", 0)
+        val editor = settings.edit()
+        editor.putString("tokenID", token.getString("tokenID"))
+        editor.apply()
     }
 /*
     private fun attemptLogIn() {

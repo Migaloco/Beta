@@ -5,7 +5,7 @@ import android.os.AsyncTask
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.beta.others.HttpRequest
-import com.example.beta.ui.LogInFragment
+import com.example.beta.others.IdCallback
 import org.json.JSONObject
 import java.net.URL
 
@@ -17,37 +17,42 @@ class LoginViewModel : ViewModel() {
     }
 
     val authenticationState = MutableLiveData<AuthenticationState>()
-    var token: JSONObject
     var mLogInTask: AsyncTaskLogIn? = null
-    var user : JSONObject? = null
+    var user : JSONObject
+    private lateinit var IdCallback:IdCallback
 
     init {
         // In this example, the user is always unauthenticated when MainActivity is launched
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
-        token = JSONObject()
         user = JSONObject()
+    }
+
+    fun authenticateWithToken(){
+
+        authenticationState.value = AuthenticationState.AUTHENTICATED
     }
 
     fun refuseAuthentication() {
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
 
-    fun authenticate(username: String, password: String) {
-        if (passwordIsValidForUsername(username, password)) {
-            authenticationState.value =
-                AuthenticationState.AUTHENTICATED
+    fun authenticate(username: String, password: String, idCallback: IdCallback) {
+        if (passwordIsValidForUsername(username, password, idCallback)) {
+            authenticationState.value = AuthenticationState.AUTHENTICATED
         } else {
-            authenticationState.value =
-                AuthenticationState.INVALID_AUTHENTICATION
+            authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
         }
     }
 
-    private fun passwordIsValidForUsername(username: String, password: String): Boolean {
+    private fun passwordIsValidForUsername(username: String, password: String, idCallback: IdCallback): Boolean {
 
-        user!!.accumulate("username", username)
-        user!!.accumulate("password", password)
+        user.accumulate("username", username)
+        user.accumulate("password", password)
 
         mLogInTask = AsyncTaskLogIn()
+
+        this.IdCallback = idCallback
+
         mLogInTask!!.execute(null)
         val r = mLogInTask!!.get()?.get(0)
 
@@ -71,7 +76,7 @@ class LoginViewModel : ViewModel() {
 
         override fun doInBackground(vararg params: Void): List<String>? {
 
-            return HttpRequest().doHTTP(URL("https://turisnova.appspot.com/rest/login/user"), user!!, "POST")
+            return HttpRequest().doHTTP(URL("https://turisnova.appspot.com/rest/login/user"), user, "POST")
         }
 
         override fun onPostExecute(success: List<String>?) {
@@ -80,7 +85,8 @@ class LoginViewModel : ViewModel() {
 
             if (success != null) {
 
-                token = JSONObject(success[1])
+                val token = JSONObject(success[1])
+                IdCallback.onUserLogeedIn(token)
             }
         }
 
