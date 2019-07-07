@@ -32,10 +32,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.Constraints
 import androidx.constraintlayout.widget.Constraints.TAG
 import com.google.android.gms.location.FusedLocationProviderClient
+
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLngBounds
-import java.security.Permission
 
 
 class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationClickListener,
@@ -115,42 +115,33 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
             gMap.setOnMyLocationClickListener(this)
         }
 
-        setCameraView()
+        getLastKnownLocationCameraView()
     }
 
-    private fun setCameraView(){
-
-        val loc = getLastKnownLocation()
-
-        val bottomBoundary = loc.latitude - .1
-        val leftBoundary = loc.longitude -.1
-        val topBoundary = loc.latitude + .1
-        val rightBoundary = loc.longitude + .1
-
-        inicialBound = LatLngBounds(LatLng(bottomBoundary, leftBoundary), LatLng(topBoundary, rightBoundary))
-
-        gMap.moveCamera(CameraUpdateFactory.newLatLngBounds(inicialBound, 0))
-    }
-
-    private fun getLastKnownLocation():Location{
-
-        var loc:Location? = null
+    private fun getLastKnownLocationCameraView(){
 
         if (ContextCompat.checkSelfPermission(
                 context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            val fu = fusedLocationClient.lastLocation
+            fusedLocationClient.lastLocation.addOnCompleteListener {
 
-            fusedLocationClient.lastLocation.addOnSuccessListener {
-
-                 loc = it
-            }.addOnFailureListener {
-
-                Log.d(TAG, "im here")
+                if(it.isSuccessful) {
+                    setCameraView(it.result!!.latitude, it.result!!.longitude)
+                }
             }
         }
+    }
 
-        return loc!!
+    private fun setCameraView(latitude: Double, longitude:Double){
+
+        val bottomBoundary = latitude - .01
+        val leftBoundary = longitude -.01
+        val topBoundary = latitude + .01
+        val rightBoundary = longitude + .01
+
+        inicialBound = LatLngBounds(LatLng(bottomBoundary, leftBoundary), LatLng(topBoundary, rightBoundary))
+
+        gMap.moveCamera(CameraUpdateFactory.newLatLngBounds(inicialBound, 0))
     }
 
     private fun enableMyLocation(){
@@ -159,7 +150,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
                 context!!,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            gMap.isMyLocationEnabled = true;
+            gMap.isMyLocationEnabled = true
 
         } else {
             requestPermissions(
