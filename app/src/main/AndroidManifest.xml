@@ -28,7 +28,7 @@
                 android:value="@integer/google_play_services_version" />
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyDP8If83dHOhKmr_26o7ZLMeMx289NxNaE" />
+                android:value="@string/google_maps_api_key" />
         <meta-data android:name="preloaded_fonts" android:resource="@array/preloaded_fonts"/>
 
         <uses-library

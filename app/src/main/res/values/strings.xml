@@ -35,4 +35,5 @@
     <string name="time">Time</string>
     <string name="people">People</string>
     <string name="category">Category</string>
+    <string name="google_maps_api_key">AIzaSyDP8If83dHOhKmr_26o7ZLMeMx289NxNaE</string>
 </resources>

@@ -7,6 +7,7 @@ import com.example.beta.database.entities.CategoriesEntity
 import com.example.beta.database.entities.CoursesEnt
 import com.example.beta.database.entities.LocationsEntity
 import com.example.beta.database.entities.UsersEntity
+import com.google.android.gms.maps.model.LatLng
 
 class ExampleCourses (){
 
@@ -143,5 +144,18 @@ class ExampleCourses (){
         listOfCategories.add(CategoriesEntity("Entretenimento", R.drawable.movie))
 
         return listOfCategories
+    }
+
+    fun getCourseCoordinates(): List<LatLng>{
+
+        val list = arrayListOf<LatLng>()
+
+        list.add(LatLng(38.715654, -9.237230))
+        list.add(LatLng(38.718574, -9.240105))
+        list.add(LatLng(38.709229, -9.254140))
+        list.add(LatLng(38.705545, -9.254837))
+        list.add(LatLng(38.700023, -9.253115))
+
+        return list
     }
 }
