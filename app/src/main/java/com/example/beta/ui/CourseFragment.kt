@@ -43,21 +43,20 @@ class CourseFragment : Fragment() {
 
         viewModel = ViewModelProviders.of(this).get(CoursesViewModel::class.java)
 
-        viewModel.singleCourse.observe(this, Observer {
-
-            coursentity = it
-        })
-
         val course = arguments?.getString("course")!!
         val location = arguments?.getString("location")!!
         val difficulty = arguments?.getDouble("difficulty")!!
-        val distance = arguments?.getDouble("distance")!!
         val category = arguments?.getString("category")!!
         val description = arguments?.getString("description")!!
         val photos = ConverterForUI().listStringToListInt(arguments?.getStringArrayList("photos")!!)
         val activities = arguments?.getStringArrayList("activities")!!
 
         viewModel.getCourse(course)
+
+        viewModel.singleCourse.observe(this, Observer {
+
+            coursentity = it
+        })
 
         val adapter = CoursePhotosRecyclerAdapter(context!!, photos)
         fragment_course_photos.adapter = adapter

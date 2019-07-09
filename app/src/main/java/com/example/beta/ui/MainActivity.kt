@@ -80,7 +80,8 @@ class MainActivity : AppCompatActivity() {
         alert.show()
     }
 
-    fun appExit() {
+    private fun appExit() {
+
         this.finish()
         val intent = Intent(Intent.ACTION_MAIN)
         intent.addCategory(Intent.CATEGORY_HOME)
@@ -96,23 +97,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
-
         menuInflater.inflate(R.menu.drawer_nav_layout, menu)
-
-        val sv:SearchView = menu.findItem(R.id.search_vie).actionView as SearchView
-
-        val sm = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        sv.setSearchableInfo(sm.getSearchableInfo(componentName))
-        sv.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
-
-            override fun onQueryTextSubmit(p0: String?): Boolean {
-                TODO("not implemented") //Use database list to search.(Locais / Percursos / Users)
-            }
-
-            override fun onQueryTextChange(p0: String?): Boolean {
-                return false
-            }
-        })
         return true
     }
 

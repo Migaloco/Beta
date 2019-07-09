@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.beta.data.ExampleCourses
 import com.example.beta.R
 import com.example.beta.adapters.CoursesRecyclerAdapter
+import com.example.beta.database.entities.CoursesEnt
 import com.example.beta.database.view_model.CoursesViewModel
 
 import kotlinx.android.synthetic.main.fragment_courses_table.*
@@ -20,6 +21,7 @@ import kotlinx.android.synthetic.main.fragment_courses_table.*
 class CoursesTableFragment : Fragment() {
 
     private lateinit var coursesViewModel: CoursesViewModel
+    private var category: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +35,9 @@ class CoursesTableFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fragment_courses_table_categorie.text = arguments?.getString("name")
+        category = arguments?.getString("name")
+
+        fragment_courses_table_categorie.text = category
 
         val adapter = CoursesRecyclerAdapter(context!!)
         fragment_courses_table_list.layoutManager = LinearLayoutManager(context)
@@ -43,7 +47,19 @@ class CoursesTableFragment : Fragment() {
 
         coursesViewModel.allCourses.observe(this, Observer {
 
-            adapter.setCourses(it)
+            adapter.setCourses(getlistByCtg(it))
         })
+    }
+
+    fun getlistByCtg(list: List<CoursesEnt>): List<CoursesEnt>{
+
+        val nArray = arrayListOf<CoursesEnt>()
+
+        for(i in list){
+
+            if(i.category == category) nArray.add(i)
+        }
+
+        return nArray
     }
 }

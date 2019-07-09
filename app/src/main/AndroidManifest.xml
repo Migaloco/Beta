@@ -28,13 +28,12 @@
                 android:value="@integer/google_play_services_version" />
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
-                android:value="@string/google_maps_api_key" />
+                android:value="AIzaSyDNHrmWt21kUBGfx3AaBRK01cHcq_fDIyk" />
         <meta-data android:name="preloaded_fonts" android:resource="@array/preloaded_fonts"/>
 
         <uses-library
                 android:name="org.apache.http.legacy"
                 android:required = "false"/>
-
     </application>
 
 </manifest>

@@ -8,12 +8,17 @@ import com.example.beta.database.entities.CoursesEnt
 class CoursesRepository(private val coursesDao: CoursesDao){
 
     val allCourses: LiveData<List<CoursesEnt>> = coursesDao.getAllCourses()
-    var singleCourse: LiveData<CoursesEnt> = coursesDao.getCourse("")
+    var singleCourse: LiveData<CoursesEnt> = coursesDao.getCourse(" ")
+    var coursesByCtg: LiveData<List<CoursesEnt>> = coursesDao.getAllCoursesByCtg(" ")
 
     @WorkerThread
     fun getCourse(str: String) {
-
         singleCourse = coursesDao.getCourse(str)
+    }
+
+    @WorkerThread
+    fun getAllCoursesByCtg(category: String){
+        coursesByCtg = coursesDao.getAllCoursesByCtg(category)
     }
 
     @WorkerThread

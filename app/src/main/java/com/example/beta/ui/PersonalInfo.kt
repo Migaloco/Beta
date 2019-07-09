@@ -13,8 +13,10 @@ import kotlinx.android.synthetic.main.fragment_personal_info.*
 
 class PersonalInfo : Fragment() {
 
-    var keyListenerArrayList: ArrayList<KeyListener> = arrayListOf()
+    private var save :MenuItem? = null
+    private var edit :MenuItem? = null
 
+    var keyListenerArrayList: ArrayList<KeyListener> = arrayListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -85,8 +87,17 @@ class PersonalInfo : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when(item.itemId){
-            R.id.profiles_menu_edit -> setEditable()
-            R.id.profiles_menu_save -> changeInfo()
+            R.id.profiles_menu_edit -> {
+                edit!!.isVisible = false
+                save!!.isVisible = true
+                setEditable()
+            }
+
+            R.id.profiles_menu_save -> {
+                edit!!.isVisible = true
+                save!!.isVisible = false
+                changeInfo()
+            }
         }
 
         return super.onOptionsItemSelected(item)
@@ -100,11 +111,12 @@ class PersonalInfo : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu){
 
-        val search = menu.findItem(R.id.search_vie)
+        save = menu.findItem(R.id.profiles_menu_save)
+        edit = menu.findItem(R.id.profiles_menu_edit)
         val suggestions = menu.findItem(R.id.suggestionsFragment)
         val settings = menu.findItem(R.id.settingsFragment)
 
-        search?.isVisible = false
+        save?.isVisible = false
         suggestions?.isVisible = false
         settings?.isVisible = false
     }

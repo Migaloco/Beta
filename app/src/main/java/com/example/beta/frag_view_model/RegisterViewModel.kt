@@ -29,10 +29,9 @@ class RegisterViewModel : ViewModel() {
         user = JSONObject()
     }
 
-    fun collectProfileData(email: String, role: String, telefone: String) {
+    fun collectProfileData(email: String, telefone: String) {
 
         user!!.accumulate("mail", email)
-        user!!.accumulate("role", role)
         user!!.accumulate("telemovel", telefone)
 
         // Change State to collecting username and password
@@ -62,7 +61,7 @@ class RegisterViewModel : ViewModel() {
 
     fun userCancelledRegistration() : Boolean {
 
-        user = null
+        user = JSONObject()
 
         registrationState.value = RegistrationState.COLLECT_PROFILE_DATA
         return true

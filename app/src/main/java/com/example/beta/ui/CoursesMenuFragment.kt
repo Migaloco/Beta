@@ -66,7 +66,7 @@ class CoursesMenuFragment : Fragment() {
 
     private fun showWelcomeMessage() {
 
-        Toast.makeText(context, "Welcome!", Toast.LENGTH_LONG).show()
+        //Toast.makeText(context, "Welcome!", Toast.LENGTH_LONG).show()
     }
 
     private fun checkToken(){

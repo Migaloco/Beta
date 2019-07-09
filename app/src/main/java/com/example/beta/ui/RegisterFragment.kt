@@ -84,16 +84,13 @@ class RegisterFragment : Fragment() {
             viewLifecycleOwner, Observer { state ->
                 if (state == RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED) {
 
-                    // Here we authenticate with the token provided by the ViewModel
-                    // then pop back to the profie_fragment, where the user authentication
-                    // status will be tested and should be authenticated.
-
-                    //loginViewModel.authenticate(authToken)
-                    navController.popBackStack(R.id.coursesMenuFragment, false)
+                    navController.popBackStack(R.id.waitingFragment, false)
+                    Toast.makeText(context, "Registration was a success", Toast.LENGTH_LONG).show()
                 }
                 if(state == RegisterViewModel.RegistrationState.REGISTRATION_FAILED){
 
                     Toast.makeText(context, "Registration failed", Toast.LENGTH_LONG).show()
+                    navController.popBackStack(R.id.logInFragment, false)
                 }
             }
         )
@@ -135,11 +132,9 @@ class RegisterFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu){
 
-        val search = menu.findItem(R.id.search_vie)
         val suggestions = menu.findItem(R.id.suggestionsFragment)
         val settings = menu.findItem(R.id.settingsFragment)
 
-        search?.isVisible = false
         suggestions?.isVisible = false
         settings?.isVisible = false
     }

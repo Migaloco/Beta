@@ -15,6 +15,7 @@ class CoursesViewModel (application: Application): AndroidViewModel(application)
     private var repository: CoursesRepository
     var allCourses: LiveData<List<CoursesEnt>>
     var singleCourse:LiveData<CoursesEnt>
+    var coursesByCtg: LiveData<List<CoursesEnt>>
 
     init {
 
@@ -22,11 +23,17 @@ class CoursesViewModel (application: Application): AndroidViewModel(application)
         repository = CoursesRepository(coursesDao)
         allCourses = repository.allCourses
         singleCourse = repository.singleCourse
+        coursesByCtg = repository.coursesByCtg
     }
 
     fun getCourse(str: String) = viewModelScope.launch(Dispatchers.IO) {
 
         repository.getCourse(str)
+    }
+
+    fun getAllCoursesByCtg(category: String) = viewModelScope.launch(Dispatchers.IO) {
+
+        repository.getAllCoursesByCtg(category)
     }
 
     fun insertAll(list: List<CoursesEnt>) = viewModelScope.launch(Dispatchers.IO) {

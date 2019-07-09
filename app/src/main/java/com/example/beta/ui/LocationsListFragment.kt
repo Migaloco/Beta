@@ -29,11 +29,9 @@ class LocationsListFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu){
 
-        val search = menu.findItem(R.id.search_vie)
         val suggestions = menu.findItem(R.id.suggestionsFragment)
         val settings = menu.findItem(R.id.settingsFragment)
 
-        search?.isVisible = false
         suggestions?.isVisible = false
         settings?.isVisible = false
     }

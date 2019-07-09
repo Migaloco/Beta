@@ -35,17 +35,16 @@ class OtherRegisterInfoFragment : Fragment() {
         val navController = findNavController(this)
 
         val email = view.findViewById<EditText>(R.id.fragment_other_register_info_email).text
-        val role = view.findViewById<EditText>(R.id.fragment_other_register_info_role).text
         val telefone = view.findViewById<EditText>(R.id.fragment_other_register_info_phone).text
 
         fragment_other_register_info_button.setOnClickListener {
 
-            if(email.isEmpty() || role.isEmpty()){
+            if(email.isEmpty()){
 
                 Toast.makeText(context, "Missing information", Toast.LENGTH_SHORT).show()
             }else{
 
-                registrationViewModel.collectProfileData(email.toString(), role.toString(), telefone.toString())
+                registrationViewModel.collectProfileData(email.toString(), telefone.toString())
             }
         }
 
