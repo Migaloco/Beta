@@ -1,13 +1,18 @@
 package com.example.beta.ui
 
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.text.method.KeyListener
+import android.text.style.BackgroundColorSpan
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.EditText
+import android.widget.TextView
+import androidx.navigation.Navigation
 import com.example.beta.R
+import com.google.android.gms.common.api.internal.BackgroundDetector
 import kotlinx.android.synthetic.main.fragment_personal_info.*
 
 
@@ -17,6 +22,7 @@ class PersonalInfo : Fragment() {
     private var edit :MenuItem? = null
 
     var keyListenerArrayList: ArrayList<KeyListener> = arrayListOf()
+    var background:ArrayList<Drawable> = arrayListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,61 +33,63 @@ class PersonalInfo : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val email = arguments?.getString("email")!!
+        val phone = "${arguments?.getInt("phone")!!}"
+
+
+        fragment_profiles_email_text.setText(email, TextView.BufferType.EDITABLE)
+        fragment_profiles_phone_text.setText(phone, TextView.BufferType.EDITABLE)
 
         populateArrayType()
 
         setDisabled()
-
-        super.onViewCreated(view, savedInstanceState)
     }
 
     fun populateArrayType(){
 
-        keyListenerArrayList.add(fragment_profiles_username_text.keyListener)
         keyListenerArrayList.add(fragment_profiles_email_text.keyListener)
         keyListenerArrayList.add(fragment_profiles_phone_text.keyListener)
-        keyListenerArrayList.add(fragment_profiles_passwrod_text.keyListener)
+        background.add(fragment_profiles_email_text.background)
+        background.add(fragment_profiles_phone_text.background)
     }
 
     fun changeInfo(){
+
+        val bundle = Bundle()
+
+        bundle.putString("email", fragment_profiles_email_text.text.toString())
+        bundle.putInt("phone", fragment_profiles_phone_text.text.toString().toInt())
+
+        Navigation.findNavController(view!!).navigate(R.id.action_personalInfo_to_confirmChangesFragment, bundle)
+
         setDisabled()
     }
 
     fun setEditable(){
 
-        enableEditText(fragment_profiles_username_text, 0)
-        enableEditText(fragment_profiles_email_text, 1)
-        enableEditText(fragment_profiles_phone_text, 2)
-        enableEditText(fragment_profiles_passwrod_text, 3)
+        enableEditText(fragment_profiles_email_text, 0)
+        enableEditText(fragment_profiles_phone_text, 1)
     }
 
 
     fun setDisabled(){
 
-        disableEditText(fragment_profiles_username_text, false)
         disableEditText(fragment_profiles_email_text, false)
-        disableEditText(fragment_profiles_phone_text, false)
-        disableEditText(fragment_profiles_passwrod_text, true)
+        disableEditText(fragment_profiles_phone_text, true)
     }
 
     private fun disableEditText(editText: EditText, bol:Boolean){
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            editText.focusable = View.NOT_FOCUSABLE
-        }
         editText.keyListener = null
         editText.setBackgroundColor(Color.TRANSPARENT)
-
-        //if(bol) fragment_profiles_passwrod_text_layout.isEnabled = false    No caso de querer fazer de outra forma
     }
 
     private fun enableEditText(editText: EditText, pos:Int){
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            editText.focusable = View.FOCUSABLE
-        }
         editText.keyListener = keyListenerArrayList[pos]
+        editText.background = background[pos]
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

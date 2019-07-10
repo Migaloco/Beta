@@ -6,7 +6,10 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.beta.R
+import com.example.beta.adapters.LocationsRecyclerAdapter
+import kotlinx.android.synthetic.main.fragment_locations_list.*
 
 class LocationsListFragment : Fragment() {
 
@@ -21,9 +24,10 @@ class LocationsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val activities = arguments?.getStringArrayList("activities")!!
+        val activities = arguments?.getStringArrayList("descriptions")!!
 
-
+        fragment_locations_list_list.layoutManager = LinearLayoutManager(context)
+        fragment_locations_list_list.adapter = LocationsRecyclerAdapter(context!!, activities)
     }
 
 

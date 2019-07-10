@@ -5,10 +5,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beta.R
+import com.example.beta.database.entities.UsersEntity
 import com.example.beta.others.CustomViewHolder
 import kotlinx.android.synthetic.main.ranking_list_layout.view.*
 
-class RankingRecyclerAdapter(val context: Context, val names: ArrayList<String>):RecyclerView.Adapter<CustomViewHolder>(){
+class RankingRecyclerAdapter(val context: Context, val names: ArrayList<UsersEntity>):RecyclerView.Adapter<CustomViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
 
@@ -23,10 +24,11 @@ class RankingRecyclerAdapter(val context: Context, val names: ArrayList<String>)
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
 
-        val getName = names[position]
+        val user = names[position]
         val rank = position + 1
 
         holder.view.ranking_list_layout_rank.text = rank.toString()
-        holder.view.ranking_list_layout_name.text = getName
+        holder.view.ranking_list_layout_name.text = user.name
+        holder.view.ranking_list_layout_points.text = user.points.toString()
     }
 }

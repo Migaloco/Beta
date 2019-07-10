@@ -21,6 +21,7 @@ class ExampleCourses (){
 
         val photos = getPhotos()
 
+        /*
         array.add(
             CoursesEnt(
                 "fun", "Lisboa", "Neste percurso vamos explorar o lado de Lisboa"
@@ -53,6 +54,7 @@ class ExampleCourses (){
             CoursesEnt(
                 "Conhecer Monsanto", "Lisboa", "Nada como estar numa floresta para fugir ao sufoco da cidade"
                 , 3.0, 3.7, ListInt(photos[5]), "Cultural", ListString(listOf("Pavilhao do Conhecimento", "Oceanario"))))
+                */
         return array
     }
 
@@ -121,12 +123,12 @@ class ExampleCourses (){
     fun getExamplesUsers():List<UsersEntity>{
 
         val arrayList = arrayListOf<UsersEntity>()
-
+        /*
         arrayList.add(UsersEntity("Miguel", 400, ListString(emptyList()), ListString(emptyList())))
         arrayList.add(UsersEntity("Jhordy", 200, ListString(emptyList()), ListString(emptyList())))
         arrayList.add(UsersEntity("Ricardo", 200, ListString(emptyList()), ListString(emptyList())))
         arrayList.add(UsersEntity("Madeira", 100, ListString(emptyList()), ListString(emptyList())))
-
+*/
         return arrayList
     }
 
@@ -137,11 +139,11 @@ class ExampleCourses (){
 
         val listOfCategories = arrayListOf<CategoriesEntity>()
 
-        listOfCategories.add(CategoriesEntity("Natureza", R.drawable.ic_baseline_nature_24px))
+        listOfCategories.add(CategoriesEntity("Nature", R.drawable.ic_baseline_nature_24px))
         listOfCategories.add(CategoriesEntity("Cultural", R.drawable.bank_outline))
-        listOfCategories.add(CategoriesEntity("Educacional", R.drawable.school))
-        listOfCategories.add(CategoriesEntity("Gastronomia", R.drawable.food))
-        listOfCategories.add(CategoriesEntity("Entretenimento", R.drawable.movie))
+        listOfCategories.add(CategoriesEntity("Educational", R.drawable.school))
+        listOfCategories.add(CategoriesEntity("Gastronomy", R.drawable.food))
+        listOfCategories.add(CategoriesEntity("Entertainment", R.drawable.movie))
 
         return listOfCategories
     }

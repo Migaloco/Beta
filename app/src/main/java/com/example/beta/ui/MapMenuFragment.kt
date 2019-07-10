@@ -29,9 +29,9 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.Constraints
 import androidx.constraintlayout.widget.Constraints.TAG
-import com.example.beta.data.ExampleCourses
+import androidx.navigation.Navigation
+import com.example.beta.others.StringToDouble
 import com.google.android.gms.location.FusedLocationProviderClient
 
 import com.google.android.gms.location.LocationServices
@@ -44,7 +44,6 @@ import com.google.maps.internal.PolylineEncoding
 import com.google.maps.model.DirectionsResult
 import com.google.maps.model.TravelMode
 import kotlinx.android.synthetic.main.fragment_map_menu.*
-import org.slf4j.Marker
 
 
 class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationClickListener,
@@ -59,8 +58,12 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
     private lateinit var inicialBound: LatLngBounds
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var mGeoApiContext: GeoApiContext? = null
-    private var displayCourse: Boolean? = null
-
+    private var display: Boolean? = null
+    private var startC: Boolean? = null
+    private var finish: String? = null
+    private var start: String? = null
+    private var waypoints: ArrayList<String>? = null
+    private var myLoc: LatLng? = null
     private val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
 
     override fun onCreateView(
@@ -93,9 +96,6 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         }
 
         framgent_map_menu_reset_map.setOnClickListener { resetMap() }
-
-        //displayCourse = arguments?.getBoolean("display")
-        displayCourse = true
     }
 
      override fun onSaveInstanceState(outState: Bundle) {
@@ -137,11 +137,26 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
             gMap.setOnInfoWindowClickListener(this)
         }
 
-        if(displayCourse == null){
+        display = arguments?.getBoolean("course")
+        startC = arguments?.getBoolean("iniciate")
+
+        if(display != null || startC != null){
+
+            resetMap()
+
+            waypoints = arguments?.getStringArrayList("waypoints")
+            finish = arguments?.getString("finish")
+            start = arguments?.getString("start")
+
+            if(display as Boolean) {
+
+                displayCourse()
+            } else{
+                startCourse()
+            }
+        } else{
 
             getLastKnownLocationCameraView()
-        }else{
-            displayCourse()
         }
     }
 
@@ -154,6 +169,21 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
 
                 if(it.isSuccessful) {
                     setCameraViewInitial(it.result!!.latitude, it.result!!.longitude)
+                }
+            }
+        }
+    }
+
+    private fun getLastKnownLocationNav(){
+
+        if (ContextCompat.checkSelfPermission(
+                    context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+
+            fusedLocationClient.lastLocation.addOnCompleteListener {
+
+                if(it.isSuccessful) {
+                    myLoc = LatLng(it.result!!.latitude, it.result!!.longitude)
+                    calculateDirections()
                 }
             }
         }
@@ -220,6 +250,8 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
             .setPositiveButton("Yes") { _, _ ->
                 val enableGpsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS)
+            }.setNegativeButton("No"){_,_ ->
+                Navigation.findNavController(view!!).navigate(R.id.coursesMenuFragment)
             }
         val alert = builder.create()
         alert.show()
@@ -272,45 +304,56 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
 
     fun displayCourse(){
 
-        resetMap()
-
-        val example = ExampleCourses().getCourseCoordinates()
-
-        calculateDirections(example)
-        addCourseMarkers(example)
+        myLoc = null
+        calculateDirections()
     }
 
-    private fun calculateDirections(example: List<LatLng>){
+    fun startCourse(){
+
+        getLastKnownLocationNav()
+    }
+
+    private fun calculateDirections(){
 
         Log.d(TAG, "started to calculate")
 
-        val max = example.size - 1
-
-        Log.d(TAG, "max: ${max}")
-
-        val destination = com.google.maps.model.LatLng(example[max].latitude, example[max].longitude)
         val directions =  DirectionsApiRequest(mGeoApiContext)
 
-        directions.mode(TravelMode.WALKING)
-        directions.origin(com.google.maps.model.LatLng(example[0].latitude, example[0].longitude))
+        if(myLoc != null){
 
-        var i = 1
-        while(i < max){
-            directions.waypoints(com.google.maps.model.LatLng(example[i].latitude, example[i].longitude))
-            Log.d(TAG, "coord: ${example[i].latitude} , ${example[i].longitude}")
-            i++
+            waypoints!!.add(start!!)
+            start = "${myLoc!!.latitude}, ${myLoc!!.longitude}"
         }
 
-        Log.d(TAG, "calculateDirections: destination: $destination")
+        val array = arrayListOf<LatLng>()
+        array.addAll(StringToDouble().getStringToListDoubles(start!!))
 
-        directions.destination(destination).setCallback( object :PendingResult.Callback<DirectionsResult>{
+        for(i in 0 until waypoints!!.size){
+
+            array.addAll(StringToDouble().getStringToListDoubles(waypoints!![i]))
+        }
+
+        array.addAll(StringToDouble().getStringToListDoubles(finish!!))
+
+        directions.mode(TravelMode.WALKING)
+        directions.origin(start)
+
+        for(i in 0 until waypoints!!.size) {
+
+            directions.waypoints(waypoints!![i])
+        }
+
+        directions.destination(finish).setCallback(object :PendingResult.Callback<DirectionsResult>{
 
             override fun onFailure(e: Throwable?) {
                 Log.d(TAG, "failed")
             }
 
             override fun onResult(result: DirectionsResult?) {
-                if(result != null) addPolylinesToMap(result)
+                if(result != null){
+                    addCourseMarkers(array)
+                    addPolylinesToMap(result)
+                }
                 Log.d(TAG, "finished calculating")
             }
         })
@@ -320,24 +363,21 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
       Handler(Looper.getMainLooper()).post{
 
           run {
-              Log.d(TAG, "run: result routes: " + result.routes.size);
+              Log.d(TAG, "run: result routes: " + result.routes.size)
 
               for(route in result.routes){
-                  Log.d(TAG, "run: leg: " + route.legs[0].toString());
+                  Log.d(TAG, "run: leg: " + route.legs[0].toString())
                   val  decodedPath: List<com.google.maps.model.LatLng> = PolylineEncoding.decode(route.overviewPolyline.encodedPath)
 
                   val newDecodedPath: ArrayList<LatLng> =  arrayListOf()
 
-                  // This loops through all the LatLng coordinates of ONE polyline.
                   for(latLng in decodedPath){
 
                       newDecodedPath.add(LatLng(latLng.lat, latLng.lng))
                   }
 
-                  val polyline: Polyline = gMap.addPolyline(PolylineOptions().addAll(newDecodedPath));
+                  val polyline: Polyline = gMap.addPolyline(PolylineOptions().addAll(newDecodedPath))
                   polyline.color = ContextCompat.getColor(context!!, R.color.darkGrey)
-
-                  //addCourseMarkers(polyline.points)
 
                   zoomRoute(polyline.points)
               }
@@ -346,15 +386,18 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
     }
 
     fun addCourseMarkers(example: List<LatLng>){
-
-        for(i in example) {
-            val marker = gMap.addMarker(
-                MarkerOptions()
-                    .position(i)
-                    .title("Coords: (${i.latitude}, ${i.longitude})")
-                    .snippet("Click this window if you're near the activity")
-            )
-            marker.showInfoWindow()
+        Handler(Looper.getMainLooper()).post {
+             run {
+                 for (i in example) {
+                     val marker = gMap.addMarker(
+                         MarkerOptions()
+                             .position(i)
+                             .title("Coords: (${i.latitude}, ${i.longitude})")
+                             .snippet("Click this window if you're near the activity")
+                     )
+                     marker.showInfoWindow()
+                 }
+             }
         }
     }
 
@@ -367,7 +410,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
                 checkCloseToCheckPoint()
                 dialog.dismiss()
             })
-            .setNegativeButton("No", DialogInterface.OnClickListener() {dialog,_ ->
+            .setNegativeButton("No", DialogInterface.OnClickListener{dialog,_ ->
                 dialog.cancel()
             })
         val alert = builder.create()
@@ -378,10 +421,10 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
 
         if (lstLatLngRoute.isEmpty()) return
 
-        val boundsBuilder = LatLngBounds.Builder();
-        for (latLngPoint in lstLatLngRoute) boundsBuilder.include(latLngPoint);
-        val routePadding = 120;
-        val latLngBounds = boundsBuilder.build();
+        val boundsBuilder = LatLngBounds.Builder()
+        for (latLngPoint in lstLatLngRoute) boundsBuilder.include(latLngPoint)
+        val routePadding = 120
+        val latLngBounds = boundsBuilder.build()
 
         gMap.animateCamera(
             CameraUpdateFactory.newLatLngBounds(latLngBounds, routePadding),

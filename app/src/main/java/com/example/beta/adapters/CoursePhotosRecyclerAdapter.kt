@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beta.R
-import com.example.beta.data.CoursesListing
 import com.example.beta.others.CustomViewHolder
 import kotlinx.android.synthetic.main.course_photos_layout.view.*
 

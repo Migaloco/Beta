@@ -71,9 +71,5 @@
                         android:layout_marginEnd="10dp" android:paddingTop="5dp" android:layout_marginBottom="2dp"/>
             </LinearLayout>
         </LinearLayout>
-        <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:layout_weight="2"
-                android:id="@+id/courses_table_list_layout_photo_list"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -19,7 +19,7 @@
                     android:layout_weight="1"
                     android:layout_margin="5dp"/>
             <TextView
-                    android:text="Perfil"
+                    android:text="Profile"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" android:id="@+id/fragment_profiles_title"
                     android:textSize="70sp" android:fontFamily="@font/roboto_medium_italic"
@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" android:layout_weight="26" android:gravity="center_vertical">
             <TextView
-                    android:text="Info Pessoal"
+                    android:text="Personal info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/fragment_profiles_info_pessoal_text"
                     android:background="@drawable/grey_background" android:layout_marginStart="20dp"
@@ -64,7 +64,7 @@
                 android:layout_height="match_parent" android:gravity="center_vertical" android:layout_weight="26"
         >
             <TextView
-                    android:text="Percursos Feitos"
+                    android:text="Routes Completed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/fragment_profiles_courses_done_text"
                     android:background="@drawable/grey_background" android:layout_marginStart="20dp"

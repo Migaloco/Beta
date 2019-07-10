@@ -28,7 +28,6 @@ class LoginViewModel : ViewModel() {
     }
 
     fun authenticateWithToken(){
-
         authenticationState.value = AuthenticationState.AUTHENTICATED
     }
 

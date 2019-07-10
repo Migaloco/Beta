@@ -20,7 +20,7 @@ import com.example.beta.database.entities.UsersEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database(entities = [CoursesEnt::class, CategoriesEntity::class, UsersEntity::class, LocationsEntity::class], version = 4)
+@Database(entities = [CoursesEnt::class, CategoriesEntity::class, UsersEntity::class, LocationsEntity::class], version = 5)
 @TypeConverters(ListIntConverter::class, ListStringConverter::class)
 abstract class RoomDatabaseApp: RoomDatabase(){
 
@@ -63,7 +63,6 @@ abstract class RoomDatabaseApp: RoomDatabase(){
                 }
             }
         }
-
 
         suspend fun populateCourses(coursesDao: CoursesDao) {
 

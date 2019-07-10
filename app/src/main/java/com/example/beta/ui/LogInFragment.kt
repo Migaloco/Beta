@@ -99,6 +99,7 @@ class LogInFragment : Fragment(), IdCallback {
         val settings = context!!.getSharedPreferences("AUTHENTICATION", 0)
         val editor = settings.edit()
         editor.putString("tokenID", token.getString("tokenID"))
+        editor.putString("username", token.getString("username"))
         editor.apply()
     }
 /*

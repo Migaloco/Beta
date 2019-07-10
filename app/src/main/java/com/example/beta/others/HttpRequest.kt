@@ -35,9 +35,11 @@ class HttpRequest (){
             connection.setRequestProperty("Accept", "application/json")
             connection.setRequestProperty("Content-type", "application/json")
 
-            out = BufferedOutputStream(connection.outputStream)
-            out.write(data.toString().toByteArray())
-            out.flush()
+            if(method == "POST") {
+                out = BufferedOutputStream(connection.outputStream)
+                out.write(data.toString().toByteArray())
+                out.flush()
+            }
 
             responseCode = connection.responseCode
 

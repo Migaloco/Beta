@@ -1,5 +1,7 @@
 package com.example.beta.ui
 
+import android.annotation.SuppressLint
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,20 +14,31 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.beta.R
 import com.example.beta.adapters.CategoriesRecyclerAdapter
-import com.example.beta.data.CategoriesListing
+import com.example.beta.data.CoursesData
+import com.example.beta.data.DataCentral
+import com.example.beta.database.converter.ListString
 import com.example.beta.database.view_model.CategoriesViewModel
 import com.example.beta.frag_view_model.LoginViewModel
+import com.example.beta.others.HttpRequest
 import kotlinx.android.synthetic.main.fragment_courses_menu.*
+import org.json.JSONArray
+import org.json.JSONObject
+import java.net.URL
 
 class CoursesMenuFragment : Fragment() {
 
     private lateinit var categoriesViewModel:CategoriesViewModel
 
-    private val viewModel: LoginViewModel by activityViewModels()
+    //private val viewModel: LoginViewModel by activityViewModels()
+
+    //private var district: JSONObject? = null
+    //private var method: String? = null
+    //private var url: String? = null
+
+    //private var mUpdateTask: AsyncTaskCheckUpdate? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,32 +68,5 @@ class CoursesMenuFragment : Fragment() {
             adapter.setCategoriesList(it)
         })
 
-        viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
-
-            when (authenticationState) {
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> showWelcomeMessage()
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> checkToken()
-            }
-        })
-    }
-
-    private fun showWelcomeMessage() {
-
-        //Toast.makeText(context, "Welcome!", Toast.LENGTH_LONG).show()
-    }
-
-    private fun checkToken(){
-
-        val navController = NavHostFragment.findNavController(this)
-        val settings = context!!.getSharedPreferences("AUTHENTICATION", 0)
-        val token = settings.getString("tokenID", null)
-
-        when(token){
-            null -> navController.navigate(R.id.logInFragment)
-            else -> {
-                viewModel.authenticateWithToken()
-                showWelcomeMessage()
-            }
-        }
     }
 }

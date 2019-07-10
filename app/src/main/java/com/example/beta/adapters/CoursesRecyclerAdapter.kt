@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beta.R
+import com.example.beta.database.converter.ListString
 import com.example.beta.database.entities.CoursesEnt
 import com.example.beta.others.CustomViewHolder
 import com.google.gson.Gson
@@ -43,27 +44,21 @@ class CoursesRecyclerAdapter (val context: Context):
 
         hold.courses_table_list_layout_name.text = item.course
         hold.courses_table_list_layout_difficulty.text = ": " + item.difficulty
-        hold.courses_table_list_layout_distance.text = ": " + item.distance + "km"
-        hold.courses_table_list_layout_district.text = item.location
-
-        val dividerItem = DividerItemDecoration(hold.courses_table_list_layout_photo_list.context, DividerItemDecoration.VERTICAL)
-        dividerItem.setDrawable(hold.resources.getDrawable(R.drawable.recycler_view_divider, null))
-        hold.courses_table_list_layout_photo_list.addItemDecoration(dividerItem)
-
-        hold.courses_table_list_layout_photo_list.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        hold.courses_table_list_layout_photo_list.adapter = CoursePhotosRecyclerAdapter(context, item.photos.list)
+        hold.courses_table_list_layout_district.text = item.district
 
         hold.courses_table_list_layout_all.setOnClickListener {
 
             val bundle = Bundle()
             bundle.putString("course", item.course)
-            bundle.putString("location", item.location)
-            bundle.putDouble("difficulty", item.difficulty)
-            bundle.putDouble("distance", item.distance)
+            bundle.putString("location", item.district)
+            bundle.putInt("difficulty", item.difficulty)
             bundle.putString("category",item.category)
             bundle.putString("description", item.description)
-            bundle.putStringArrayList("photos", ConverterForUI().listIntToArrayListString(item.photos))
-            bundle.putStringArrayList("activities", ConverterForUI().listStringToArrayListString(item.activities))
+            bundle.putString("waypoints", item.waypoints)
+            bundle.putString("finish", item.finish)
+            bundle.putString("start", item.start)
+            bundle.putStringArrayList("markers", ConverterForUI().listStringToArrayListString(item.wMarkers))
+            bundle.putStringArrayList("descriptions", ConverterForUI().listStringToArrayListString(item.wDescriptions))
 
             Navigation.findNavController(hold).navigate(R.id.action_coursesTableFragment_to_courseFragment, bundle)
         }

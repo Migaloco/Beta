@@ -27,9 +27,8 @@ import java.net.URL
 
 class RegisterFragment : Fragment() {
 
-    //var mAuthTask: AsyncTaskSignIn? = null
-    //var user : JSONObject? = null
-    //private val loginViewModel: LoginViewModel by activityViewModels()
+
+    private val loginViewModel: LoginViewModel by activityViewModels()
     private val registrationViewModel: RegisterViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -42,8 +41,6 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        //user = JSONObject()
 
         val navController = findNavController(this)
 
@@ -85,6 +82,7 @@ class RegisterFragment : Fragment() {
                 if (state == RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED) {
 
                     navController.popBackStack(R.id.waitingFragment, false)
+                    loginViewModel.authenticateWithToken()
                     Toast.makeText(context, "Registration was a success", Toast.LENGTH_LONG).show()
                 }
                 if(state == RegisterViewModel.RegistrationState.REGISTRATION_FAILED){

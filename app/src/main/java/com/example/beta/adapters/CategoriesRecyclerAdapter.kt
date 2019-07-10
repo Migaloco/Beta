@@ -3,16 +3,12 @@ package com.example.beta.adapters
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beta.R
-import com.example.beta.data.CategoriesListing
 import com.example.beta.database.entities.CategoriesEntity
 import com.example.beta.others.CustomViewHolder
-import com.example.beta.ui.CoursesMenuFragmentDirections
-import com.example.beta.ui.CoursesTableFragmentDirections
 import kotlinx.android.synthetic.main.categories_list_layout.view.*
 
 class CategoriesRecyclerAdapter(val context: Context): RecyclerView.Adapter<CustomViewHolder>(){

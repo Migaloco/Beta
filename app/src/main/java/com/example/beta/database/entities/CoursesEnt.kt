@@ -7,6 +7,7 @@ import com.example.beta.database.converter.ListInt
 import com.example.beta.database.converter.ListString
 
 @Entity(tableName = "courses_table")
-data class CoursesEnt (@PrimaryKey val course: String, val location: String, val description: String
-                       , val difficulty: Double, val distance: Double, val photos: ListInt
-                       , val category: String, val activities: ListString)
+data class CoursesEnt (@PrimaryKey val course: String, val district: String, val description: String
+                       , val difficulty: Int, val waypoints: String, val wMarkers: ListString
+                       , val wDescriptions: ListString, val start:String, val finish:String
+                       , val category: String)

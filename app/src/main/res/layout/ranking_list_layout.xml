@@ -6,16 +6,17 @@
 
     <LinearLayout
             android:orientation="horizontal"
-            android:paddingStart="10dp" android:paddingTop="10dp" android:paddingBottom="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:gravity="center">
+            android:layout_height="wrap_content" android:gravity="center" android:weightSum="12"
+            android:layout_margin="10dp">
 
         <TextView
                 android:id="@+id/ranking_list_layout_rank"
                 android:text="TextView"
-                android:layout_width="80dp"
-                android:layout_height="56dp"
-                android:textSize="24sp" android:gravity="center|center_vertical" android:textStyle="bold"/>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="24sp" android:gravity="center|center_vertical" android:textStyle="bold"
+                android:layout_weight="5"/>
 
         <TextView
                 android:id="@+id/ranking_list_layout_name"
@@ -23,6 +24,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="30sp" android:gravity="center_vertical"
-                android:paddingStart="15dp"/>
+                android:paddingStart="15dp" android:layout_weight="3"/>
+        <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/ranking_list_layout_points" android:layout_weight="4"
+                android:textSize="18sp"/>
     </LinearLayout>
 </LinearLayout>

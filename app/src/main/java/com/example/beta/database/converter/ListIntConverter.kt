@@ -15,16 +15,17 @@ class ListIntConverter {
 
             if(i.isNotEmpty())array.add(i.toInt())
         }
-
         return ListInt(array)
     }
 
     @TypeConverter
     fun listToStoredString(photos:ListInt):String{
+
         var st = ""
         for(i in photos.list){
             st += "$i,"
         }
+
         return st
     }
 }

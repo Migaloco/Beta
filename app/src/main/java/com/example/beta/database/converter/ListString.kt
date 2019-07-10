@@ -3,7 +3,7 @@ package com.example.beta.database.converter
 import android.os.Parcel
 import android.os.Parcelable
 
-data class ListString(val list: List<String>):Parcelable {
+data class ListString(val list: ArrayList<String>):Parcelable {
     constructor(parcel: Parcel) : this(parcel.createStringArrayList()) {
     }
 
