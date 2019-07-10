@@ -2,7 +2,6 @@ package com.example.beta.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,15 +22,15 @@ import androidx.core.content.ContextCompat.getSystemService
 import android.content.DialogInterface
 import android.content.Context
 import android.location.Location
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
+import android.opengl.Visibility
+import android.os.*
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.Constraints.TAG
 import androidx.navigation.Navigation
 import com.example.beta.others.ConverterForUI
+import com.example.beta.others.HttpRequest
 import com.example.beta.others.StringToDouble
 import com.google.android.gms.location.FusedLocationProviderClient
 
@@ -49,6 +48,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.DirectionsApi
 import kotlinx.android.synthetic.main.fragment_map_menu.*
+import org.json.JSONArray
+import org.json.JSONObject
+import java.net.URL
 
 
 class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationClickListener,
@@ -67,9 +69,16 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
     private var startC: Boolean? = null
     private var finish: String? = null
     private var start: String? = null
-    private var points: Int = 0
     private var waypoints: ArrayList<String>? = null
     private var myLoc: LatLng? = null
+    private var mUpdateStats: AsyncTaskSendStats? = null
+    private var url: String? = null
+    private var method:String? = null
+    private var json:JSONObject? = null
+    private var title:String? = null
+    private var points:Int? = null
+    private var counter: Int? = null
+    private var mUpdateRestUserMap: AsyncTaskRestOfUserInfoMap? = null
 
     private val completedPoints: ArrayList<Boolean> = arrayListOf()
 
@@ -107,8 +116,13 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         framgent_map_menu_reset_map.setOnClickListener { resetMap() }
         fragment_map_button_check.setOnClickListener { getLocationForCheck() }
 
+
+        fragment_map_button_check.visibility = View.GONE
+        fragment_map_menu_cancel.visibility = View.GONE
         fragment_map_button_check.setBackgroundColor(ContextCompat.getColor(context!!, R.color.darkGrey))
         fragment_map_menu_cancel.setBackgroundColor(ContextCompat.getColor(context!!, R.color.darkGrey))
+
+        points = 0
     }
 
      override fun onSaveInstanceState(outState: Bundle) {
@@ -164,6 +178,12 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
 
                 displayCourse()
             } else{
+                framgent_map_menu_reset_map.visibility = View.GONE
+                fragment_map_button_check.visibility = View.VISIBLE
+                fragment_map_menu_cancel.visibility = View.VISIBLE
+
+                title = arguments?.getString("title")
+
                 startCourse()
             }
         } else{
@@ -417,7 +437,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         }
     }
 
-    fun zoomRoute(lstLatLngRoute: List<LatLng>) {
+    private fun zoomRoute(lstLatLngRoute: List<LatLng>) {
 
         if (lstLatLngRoute.isEmpty()) return
 
@@ -433,7 +453,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         )
     }
 
-    fun getLocationForCheck(){
+    private fun getLocationForCheck(){
 
         if (ContextCompat.checkSelfPermission(
                 context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -451,7 +471,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
 
         var check = 0
 
-        for(i in 0 until completedPoints!!.size){
+        for(i in 0 until completedPoints.size){
 
             if(completedPoints[i] == false){
                 check = i
@@ -472,6 +492,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         if (dist < 75){
 
             completedPoints[check] = true
+            getPoints(check)
 
             if(check == completedPoints.size - 2){
 
@@ -479,7 +500,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
             }
             else if(check == completedPoints.size - 1){
 
-                //ultimo ponto, fazer ecrã de celebração
+                getCounter()
 
             }else{
                 Toast.makeText(context, "Activity was reached", Toast.LENGTH_SHORT).show()
@@ -487,6 +508,129 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         }else{
 
             Toast.makeText(context, "Not close enough", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun getPoints(check: Int){
+
+        var p = 0
+
+        when(check){
+            0 -> points = 10
+            1 -> points = 20
+            2 -> points = 30
+            3 -> points = 40
+        }
+
+        points = points?.plus(p)
+    }
+
+    private fun sendStats(){
+
+        url = "https://turisnova.appspot.com/rest/UserRoute/postUserRoute"
+        method = "POST"
+
+        val settings = context!!.getSharedPreferences("AUTHENTICATION", 0)
+        val username = settings.getString("username", null)
+
+        json = JSONObject()
+        json!!.accumulate("username_stats", username)
+        json!!.accumulate("route_title", title)
+        json!!.accumulate("points", points)
+        json!!.accumulate("counter", counter)
+
+        mUpdateStats = AsyncTaskSendStats()
+        mUpdateStats!!.execute(null)
+        val result = mUpdateStats!!.get()
+
+        when(result.get(0)){
+            "200" -> Toast.makeText(context, "Good job, you copmleted a route", Toast.LENGTH_SHORT).show()
+            else -> Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    inner class AsyncTaskSendStats internal constructor() :
+        AsyncTask<Void, Void, List<String>>() {
+
+        override fun onPreExecute() {
+
+            if (false) {
+                cancel(true)
+            }
+        }
+
+        override fun doInBackground(vararg params: Void): List<String>? {
+
+            return HttpRequest().doHTTP(URL(url), json!!, method!!)
+        }
+
+        override fun onPostExecute(success: List<String>?) {
+            mUpdateStats = null
+        }
+
+        override fun onCancelled() {
+            mUpdateStats = null
+        }
+    }
+
+    fun getCounter(){
+
+        url = "https://turisnova.appspot.com/rest/UserRoute/getUserRoute"
+        method = "POST"
+
+        val settings = context!!.getSharedPreferences("AUTHENTICATION", 0)
+        val username = settings.getString("username", null)
+
+        json = JSONObject()
+        json!!.accumulate("username_stats", username)
+
+        mUpdateRestUserMap = AsyncTaskRestOfUserInfoMap()
+        mUpdateRestUserMap!!.execute(null)
+        val result = mUpdateRestUserMap!!.get()
+
+        when(result.get(0)){
+            "200" ->{
+                val arrayJ = JSONArray(result[1])
+
+                val arrayL = arrayListOf<String>()
+
+                for(i in 0 until arrayJ.length()){
+
+                    val map = arrayJ.getJSONObject(i).getJSONObject("propertyMap")
+
+                    val course = map.getString("route_title")
+                    if(course == title){
+
+                        counter = map.getInt("counter")
+                    }
+                }
+            }
+            else -> Toast.makeText(context,"FailedUpdateUsers", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    inner class AsyncTaskRestOfUserInfoMap internal constructor() :
+        AsyncTask<Void, Void, List<String>>() {
+
+        override fun onPreExecute() {
+            if (false) {
+                cancel(true)
+            }
+        }
+
+        override fun doInBackground(vararg params: Void): List<String>? {
+            return HttpRequest().doHTTP(URL(url), json!!, method!!)
+        }
+
+        override fun onPostExecute(success: List<String>?) {
+            sendStats()
+            mUpdateRestUserMap = null
+        }
+
+        override fun onCancelled() {
+            mUpdateRestUserMap = null
         }
     }
 }

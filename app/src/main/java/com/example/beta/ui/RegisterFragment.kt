@@ -22,11 +22,11 @@ import com.example.beta.frag_view_model.LoginViewModel
 import com.example.beta.others.HttpRequest
 import androidx.activity.addCallback
 import com.example.beta.frag_view_model.RegisterViewModel
+import com.example.beta.others.RegisterCallback
 import org.json.JSONObject
 import java.net.URL
 
 class RegisterFragment : Fragment() {
-
 
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val registrationViewModel: RegisterViewModel by activityViewModels()
@@ -57,21 +57,6 @@ class RegisterFragment : Fragment() {
             }else if(password.toString() != confpass.toString()) Toast.makeText(context, "The passwords are different", Toast.LENGTH_SHORT).show()
 
             else{
-                /*
-                user!!.accumulate("username", username.toString())
-                user!!.accumulate("password", password.toString())
-                user!!.accumulate("mail", email.toString())
-                user!!.accumulate("telemovel", telefone.toString())
-
-
-                attemptSignIn()
-
-                username.clear()
-                email.clear()
-                password.clear()
-                telefone.clear()
-                confpass.clear()
-                */
 
                 registrationViewModel.createAccountAndLogin(username.toString(), password.toString(), confpass.toString())
             }
@@ -81,8 +66,7 @@ class RegisterFragment : Fragment() {
             viewLifecycleOwner, Observer { state ->
                 if (state == RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED) {
 
-                    navController.popBackStack(R.id.waitingFragment, false)
-                    loginViewModel.authenticateWithToken()
+                    navController.popBackStack(R.id.logInFragment, false)
                     Toast.makeText(context, "Registration was a success", Toast.LENGTH_LONG).show()
                 }
                 if(state == RegisterViewModel.RegistrationState.REGISTRATION_FAILED){

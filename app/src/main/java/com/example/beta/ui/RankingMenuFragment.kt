@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.beta.R
 import com.example.beta.adapters.RankingRecyclerAdapter
+import com.example.beta.data.RankingData
 import com.example.beta.database.entities.UsersEntity
 import com.example.beta.database.view_model.UsersViewModel
 import com.example.beta.others.HttpRequest
@@ -29,8 +30,7 @@ class RankingMenuFragment : Fragment() {
     private var method: String? = null
     private var url: String? = null
 
-    lateinit var rankingList: ArrayList<UsersEntity>
-    lateinit var listFromServ: ArrayList<UsersEntity>
+    lateinit var listFromServ: ArrayList<RankingData>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,29 +42,12 @@ class RankingMenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         district = JSONObject()
+
         getUsers()
 
-        rankingList = arrangeRankings()
-
         fragment_ranking_menu_list.layoutManager = LinearLayoutManager(context)
-        fragment_ranking_menu_list.adapter = RankingRecyclerAdapter(context!!, rankingList)
+        fragment_ranking_menu_list.adapter = RankingRecyclerAdapter(context!!, listFromServ)
 
-    }
-
-    fun arrangeRankings(): ArrayList<UsersEntity>{
-
-        val arrayOrdered = arrayListOf<UsersEntity>()
-
-        for(i in listFromServ){
-            if(arrayOrdered.size == 0) arrayOrdered.add(i)
-            else {
-                val points = i.points
-                val sizeA = arrayOrdered.size
-                for (o in 0 until sizeA)
-                    if(points > arrayOrdered[o].points || o + 1 == sizeA) arrayOrdered.add(o,i)
-            }
-        }
-        return arrayOrdered
     }
 
     fun getUsers(){
@@ -80,28 +63,16 @@ class RankingMenuFragment : Fragment() {
 
         when(code){
             "200" ->{
-                val arrayJ = JSONArray(result[1])
+                val arrayJ = JSONObject(result[1])
 
-                val mapCoursesEnt = mutableMapOf<String, UsersEntity>()
-
+                val ranking = arrayListOf<RankingData>()
                 for(i in 0 until arrayJ.length()){
 
-                    val propMap = arrayJ.getJSONObject(i).getJSONObject("propertyMap")
-
-                    val name = propMap.getString("username_stats")
-                    if(!mapCoursesEnt.keys.contains(name)) mapCoursesEnt.put(name, UsersEntity(name))
-
-                    val points = propMap.getInt("points")
-                    val course = propMap.getString("route_title")
-
-                    val user = mapCoursesEnt.get(name)!!
-
-                    user.points += points
-                    user.coursesDone.list.add(course)
-                    //verificar se as alterações são feitas
+                    val name = arrayJ.getString("")
+                    val points = arrayJ.getInt("")
                 }
 
-                listFromServ = ArrayList(mapCoursesEnt.values)
+                listFromServ = ranking
                 //usersViewModel.insertAllUsers(ArrayList(mapCoursesEnt.values))
             }
             else -> Toast.makeText(context,"FailedUpdateUsers", Toast.LENGTH_SHORT).show()

@@ -105,11 +105,14 @@ class CourseFragment : Fragment() {
             bundle.putStringArrayList("waypoints", wMarkers)
             bundle.putString("finish", finish)
             bundle.putString("start", start)
+            bundle.putString("title", course)
             Navigation.findNavController(view).navigate(R.id.action_courseFragment_to_mapMenuFragment, bundle)
         }
         fragment_course_go_comments.setOnClickListener {
 
-            Navigation.findNavController(view).navigate(R.id.commentsFragmment)
+            val bundle = Bundle()
+            bundle.putString("title", course)
+            Navigation.findNavController(view).navigate(R.id.action_courseFragment_to_commentsFragmment, bundle)
         }
 
         district = JSONObject()

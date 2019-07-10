@@ -5,11 +5,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beta.R
+import com.example.beta.data.RankingData
 import com.example.beta.database.entities.UsersEntity
 import com.example.beta.others.CustomViewHolder
 import kotlinx.android.synthetic.main.ranking_list_layout.view.*
 
-class RankingRecyclerAdapter(val context: Context, val names: ArrayList<UsersEntity>):RecyclerView.Adapter<CustomViewHolder>(){
+class RankingRecyclerAdapter(val context: Context, val names: ArrayList<RankingData>):RecyclerView.Adapter<CustomViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
 

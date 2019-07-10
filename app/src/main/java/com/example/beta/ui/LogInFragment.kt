@@ -49,8 +49,6 @@ class LogInFragment : Fragment(), IdCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //user = JSONObject()
-
         val navController = findNavController(view)
 
         view.findViewById<View>(R.id.fragment_login_button).setOnClickListener {
@@ -91,102 +89,28 @@ class LogInFragment : Fragment(), IdCallback {
         editor.putString("username", token.getString("username"))
         editor.apply()
     }
-/*
-    private fun attemptLogIn() {
 
-        if (mLogInTask != null) {
-            return
-        }
+    fun isNetworkConnected(): Boolean {
 
-        mLogInTask = AsyncTaskLogIn()
-        mLogInTask!!.execute(null)
-        val r = mLogInTask!!.get()?.get(0)
+        val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        when (r) {
-            "200" -> {
-                Toast.makeText(context, "Successful Log in", Toast.LENGTH_SHORT).show()
+        if (Build.VERSION.SDK_INT < 23) {
+            val ni = cm.activeNetworkInfo
 
-                findNavController(this).navigate(R.id.coursesMenuFragment)
+            if (ni != null) {
+                return ni.isConnected && (ni.type == ConnectivityManager.TYPE_WIFI || ni.type == ConnectivityManager.TYPE_MOBILE)
             }
-            else -> {
-                when (r) {
-                    "403" -> Toast.makeText(context, "Invalid username and/or password", Toast.LENGTH_SHORT).show()
-                    "500" -> Toast.makeText(context, "The server is fried", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
+        } else {
+            val n = cm.activeNetwork
 
-    //////////////////////////////////////////Internet///////////////////////////////////////////
+            if (n != null) {
+                val nc = cm.getNetworkCapabilities(n)
 
-    @SuppressLint("StaticFieldLeak")
-    inner class AsyncTaskLogIn internal constructor() :
-        AsyncTask<Void, Void, List<String>>() {
-
-        override fun onPreExecute() {
-
-            if (!isNetworkConnected()) {
-
-                cancel(true)
-            }
-        }
-
-        override fun doInBackground(vararg params: Void): List<String>? {
-
-               return HttpRequest().doHTTP(URL("https://turisnova.appspot.com/rest/login/user"), user!!, "POST")
-        }
-
-        override fun onPostExecute(success: List<String>?) {
-
-            mLogInTask = null
-
-            if (success != null) {
-                val token: JSONObject?
-                try {
-
-                    token = JSONObject(success[1])
-                    Log.i("LoginActivity", token.toString())
-
-                    val settings = context?.getSharedPreferences("AUTHENTICATION", 0)
-                    val editor = settings?.edit()
-                    editor?.putString("tokenID", token.getString("tokenID"))
-
-                    editor?.apply()
-
-                } catch (e: JSONException) {
-
-                    Log.e("Authentication", e.toString())
-                }
-            }
-        }
-
-        override fun onCancelled() {
-            mLogInTask = null
-        }
-    }
-
-*/
-fun isNetworkConnected(): Boolean {
-
-    val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-    if (Build.VERSION.SDK_INT < 23) {
-        val ni = cm.activeNetworkInfo
-
-        if (ni != null) {
-            return ni.isConnected && (ni.type == ConnectivityManager.TYPE_WIFI || ni.type == ConnectivityManager.TYPE_MOBILE)
-        }
-    } else {
-        val n = cm.activeNetwork
-
-        if (n != null) {
-            val nc = cm.getNetworkCapabilities(n)
-
-            return nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || nc.hasTransport(
+                return nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || nc.hasTransport(
                 NetworkCapabilities.TRANSPORT_WIFI
-            )
+                )
+            }
         }
+        return false
     }
-    return false
-}
 }
