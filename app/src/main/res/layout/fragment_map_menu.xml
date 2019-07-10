@@ -19,5 +19,22 @@
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:id="@+id/framgent_map_menu_reset_map" tools:ignore="RtlHardcoded"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="10dp">
+        <ImageButton
+                app:srcCompat="@drawable/ic_location_on_black_24dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:id="@+id/fragment_map_button_check"
+                android:layout_marginRight="10dp"/>
+        <Button
+                android:text="Cancel"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content" android:id="@+id/fragment_map_menu_cancel"
+                android:layout_gravity="center_horizontal|center_vertical" android:textColor="#FFFFFF"/>
+    </LinearLayout>
 
 </FrameLayout>

@@ -128,15 +128,6 @@ class RegisterFragment : Fragment() {
         }
     }*/
 
-    override fun onPrepareOptionsMenu(menu: Menu){
-
-        val suggestions = menu.findItem(R.id.suggestionsFragment)
-        val settings = menu.findItem(R.id.settingsFragment)
-
-        suggestions?.isVisible = false
-        settings?.isVisible = false
-    }
-
     ////////////////////////////////////Internet/////////////////////////////////////////////
 
     /*

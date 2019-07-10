@@ -2,6 +2,7 @@ package com.example.beta.others
 
 import com.google.android.gms.maps.model.LatLng
 
+
 class StringToDouble(){
 
     fun getStringToListDoubles(srt: String): List<LatLng>{

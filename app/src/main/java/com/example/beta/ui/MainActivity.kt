@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage("Are you sure you want to exit?")
             .setCancelable(true)
-            .setPositiveButton("Yes", DialogInterface.OnClickListener { _, _ ->
+            .setPositiveButton("Yes") { _, _ ->
 
                 //Enviar pedido logout ao servidor
 
@@ -72,10 +72,12 @@ class MainActivity : AppCompatActivity() {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     finishAndRemoveTask()
-                }else{
+                }else {
                     appExit()
                 }
-            })
+            }.setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
         val alert = builder.create()
         alert.show()
     }

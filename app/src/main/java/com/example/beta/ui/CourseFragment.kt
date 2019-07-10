@@ -101,11 +101,15 @@ class CourseFragment : Fragment() {
         fragment_course_button_iniciate.setOnClickListener {
 
             val bundle = Bundle()
-            bundle.putBoolean("iniciate", true)
+            bundle.putBoolean("initiate", true)
             bundle.putStringArrayList("waypoints", wMarkers)
             bundle.putString("finish", finish)
             bundle.putString("start", start)
             Navigation.findNavController(view).navigate(R.id.action_courseFragment_to_mapMenuFragment, bundle)
+        }
+        fragment_course_go_comments.setOnClickListener {
+
+            Navigation.findNavController(view).navigate(R.id.commentsFragmment)
         }
 
         district = JSONObject()

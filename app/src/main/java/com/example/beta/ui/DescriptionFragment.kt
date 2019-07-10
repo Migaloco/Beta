@@ -17,13 +17,4 @@ class DescriptionFragment : Fragment() {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_description, container, false)
     }
-
-    override fun onPrepareOptionsMenu(menu: Menu){
-
-        val suggestions = menu.findItem(R.id.suggestionsFragment)
-        val settings = menu.findItem(R.id.settingsFragment)
-
-        suggestions?.isVisible = false
-        settings?.isVisible = false
-    }
 }

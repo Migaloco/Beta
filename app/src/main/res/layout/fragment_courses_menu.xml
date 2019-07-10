@@ -7,14 +7,16 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" android:id="@+id/fragment_courses_menu_layout">
+            android:layout_height="match_parent" android:id="@+id/fragment_courses_menu_layout"
+            android:background="@drawable/green_background">
         <TextView
-                android:text="Categorias"
+                android:text="Categories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/fragment_courses_menu_title"
-                android:textSize="30sp"
-                android:gravity="center" android:paddingBottom="35dp" android:paddingTop="20dp"/>
+                android:textSize="40sp"
+                android:gravity="center" android:paddingBottom="20dp" android:paddingTop="20dp"
+                android:fontFamily="@font/roboto_medium_italic" android:textColor="#FFFFFF"/>
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/fragment_courses_menu_list"
                 android:layout_width="match_parent"

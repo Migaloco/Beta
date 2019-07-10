@@ -31,23 +31,28 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.Constraints.TAG
 import androidx.navigation.Navigation
+import com.example.beta.others.ConverterForUI
 import com.example.beta.others.StringToDouble
 import com.google.android.gms.location.FusedLocationProviderClient
 
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
+import com.google.maps.android.SphericalUtil
 import com.google.maps.DirectionsApiRequest
 import com.google.maps.GeoApiContext
 import com.google.maps.PendingResult
 import com.google.maps.internal.PolylineEncoding
 import com.google.maps.model.DirectionsResult
 import com.google.maps.model.TravelMode
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.DirectionsApi
 import kotlinx.android.synthetic.main.fragment_map_menu.*
 
 
 class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationClickListener,
-    GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnInfoWindowClickListener {
+    GoogleMap.OnMyLocationButtonClickListener {
 
     private val PERMISSIONS_REQUEST_ENABLE_GPS = 2
     private val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 3
@@ -62,8 +67,12 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
     private var startC: Boolean? = null
     private var finish: String? = null
     private var start: String? = null
+    private var points: Int = 0
     private var waypoints: ArrayList<String>? = null
     private var myLoc: LatLng? = null
+
+    private val completedPoints: ArrayList<Boolean> = arrayListOf()
+
     private val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
 
     override fun onCreateView(
@@ -96,6 +105,10 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         }
 
         framgent_map_menu_reset_map.setOnClickListener { resetMap() }
+        fragment_map_button_check.setOnClickListener { getLocationForCheck() }
+
+        fragment_map_button_check.setBackgroundColor(ContextCompat.getColor(context!!, R.color.darkGrey))
+        fragment_map_menu_cancel.setBackgroundColor(ContextCompat.getColor(context!!, R.color.darkGrey))
     }
 
      override fun onSaveInstanceState(outState: Bundle) {
@@ -134,11 +147,10 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
             enableMyLocation()
             gMap.setOnMyLocationButtonClickListener(this)
             gMap.setOnMyLocationClickListener(this)
-            gMap.setOnInfoWindowClickListener(this)
         }
 
         display = arguments?.getBoolean("course")
-        startC = arguments?.getBoolean("iniciate")
+        startC = arguments?.getBoolean("initiate")
 
         if(display != null || startC != null){
 
@@ -250,8 +262,8 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
             .setPositiveButton("Yes") { _, _ ->
                 val enableGpsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS)
-            }.setNegativeButton("No"){_,_ ->
-                Navigation.findNavController(view!!).navigate(R.id.coursesMenuFragment)
+            }.setNegativeButton("No"){dialog,_ ->
+                dialog.dismiss()
             }
         val alert = builder.create()
         alert.show()
@@ -317,12 +329,13 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
 
         Log.d(TAG, "started to calculate")
 
-        val directions =  DirectionsApiRequest(mGeoApiContext)
+        val directions = DirectionsApiRequest(mGeoApiContext)
 
         if(myLoc != null){
 
-            waypoints!!.add(start!!)
-            start = "${myLoc!!.latitude}, ${myLoc!!.longitude}"
+            waypoints!!.add(0,start!!)
+            start = "${myLoc!!.latitude},${myLoc!!.longitude}"
+            myLoc = null
         }
 
         val array = arrayListOf<LatLng>()
@@ -338,30 +351,33 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         directions.mode(TravelMode.WALKING)
         directions.origin(start)
 
-        for(i in 0 until waypoints!!.size) {
+        if(display != null && display as Boolean) {
 
-            directions.waypoints(waypoints!![i])
+            directions.waypoints(waypoints!![0], waypoints!![1], waypoints!![2])
+        }
+        else if(startC!= null && startC as Boolean){
+            directions.waypoints(waypoints!![0], waypoints!![1], waypoints!![2], waypoints!![3])
         }
 
-        directions.destination(finish).setCallback(object :PendingResult.Callback<DirectionsResult>{
+        directions.destination(finish).setCallback(object : PendingResult.Callback<DirectionsResult>{
 
-            override fun onFailure(e: Throwable?) {
-                Log.d(TAG, "failed")
-            }
-
-            override fun onResult(result: DirectionsResult?) {
-                if(result != null){
-                    addCourseMarkers(array)
-                    addPolylinesToMap(result)
+                override fun onFailure(e: Throwable?) {
+                    Log.d(TAG, "failed")
                 }
-                Log.d(TAG, "finished calculating")
-            }
+
+                override fun onResult(result: DirectionsResult?) {
+                    if(result != null){
+                        addCourseMarkers(array)
+                        addPolylinesToMap(result)
+                    }
+                    Log.d(TAG, "finished calculating")
+                }
         })
     }
 
+
     fun addPolylinesToMap(result: DirectionsResult){
       Handler(Looper.getMainLooper()).post{
-
           run {
               Log.d(TAG, "run: result routes: " + result.routes.size)
 
@@ -401,22 +417,6 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         }
     }
 
-    override fun onInfoWindowClick(p0: com.google.android.gms.maps.model.Marker?) {
-
-        val builder = AlertDialog.Builder(context!!)
-        builder.setMessage(p0!!.title)
-            .setCancelable(true)
-            .setPositiveButton("Yes", DialogInterface.OnClickListener{dialog,_ ->
-                checkCloseToCheckPoint()
-                dialog.dismiss()
-            })
-            .setNegativeButton("No", DialogInterface.OnClickListener{dialog,_ ->
-                dialog.cancel()
-            })
-        val alert = builder.create()
-        alert.show()
-    }
-
     fun zoomRoute(lstLatLngRoute: List<LatLng>) {
 
         if (lstLatLngRoute.isEmpty()) return
@@ -433,5 +433,60 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         )
     }
 
-    fun checkCloseToCheckPoint(){}
+    fun getLocationForCheck(){
+
+        if (ContextCompat.checkSelfPermission(
+                context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            fusedLocationClient.lastLocation.addOnCompleteListener {
+
+                if(it.isSuccessful) {
+                    checkCloseToCheckPoint(it.result!!.latitude, it.result!!.longitude)
+                }
+            }
+        }
+    }
+
+    fun checkCloseToCheckPoint(lat:Double, lng: Double){
+
+        var check = 0
+
+        for(i in 0 until completedPoints!!.size){
+
+            if(completedPoints[i] == false){
+                check = i
+                break
+            }
+        }
+
+        val userLoc = Location("user")
+        userLoc.longitude = lng
+        userLoc.latitude = lat
+
+        val pointLoc = Location("point")
+        pointLoc.latitude = ConverterForUI().stringToLatLng(waypoints!![check]).latitude
+        pointLoc.longitude = ConverterForUI().stringToLatLng(waypoints!![check]).longitude
+
+        val dist = userLoc.distanceTo(pointLoc)
+
+        if (dist < 75){
+
+            completedPoints[check] = true
+
+            if(check == completedPoints.size - 2){
+
+                Toast.makeText(context, "Only missing the final activity", Toast.LENGTH_SHORT).show()
+            }
+            else if(check == completedPoints.size - 1){
+
+                //ultimo ponto, fazer ecrã de celebração
+
+            }else{
+                Toast.makeText(context, "Activity was reached", Toast.LENGTH_SHORT).show()
+            }
+        }else{
+
+            Toast.makeText(context, "Not close enough", Toast.LENGTH_SHORT).show()
+        }
+    }
 }

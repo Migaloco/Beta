@@ -37,6 +37,7 @@
         <action android:id="@+id/action_courseFragment_to_locationsListFragment"
                 app:destination="@id/locationsListFragment"/>
         <action android:id="@+id/action_courseFragment_to_mapMenuFragment" app:destination="@id/mapMenuFragment"/>
+        <action android:id="@+id/action_courseFragment_to_commentsFragmment" app:destination="@id/commentsFragmment"/>
     </fragment>
 
     <fragment android:id="@+id/coursesTableFragment" android:name="com.example.beta.ui.CoursesTableFragment"
@@ -54,12 +55,6 @@
               android:label="fragment_profiles" tools:layout="@layout/fragment_profiles">
         <action android:id="@+id/action_profileFragment_to_personalInfo" app:destination="@id/personalInfo"/>
     </fragment>
-
-    <fragment android:id="@+id/settingsFragment" android:name="com.example.beta.ui.SettingsFragment"
-              android:label="fragment_settings" tools:layout="@layout/fragment_settings"/>
-
-    <fragment android:id="@+id/suggestionsFragment" android:name="com.example.beta.ui.SuggestionsFragment"
-              android:label="fragment_suggestions" tools:layout="@layout/fragment_suggestions"/>
 
     <fragment android:id="@+id/coursesMenuFragment" android:name="com.example.beta.ui.CoursesMenuFragment"
               android:label="fragment_courses_menu" tools:layout="@layout/fragment_courses_menu">
@@ -90,4 +85,6 @@
               android:label="fragment_confirm_changes" tools:layout="@layout/fragment_confirm_changes">
         <action android:id="@+id/action_confirmChangesFragment_to_personalInfo" app:destination="@id/personalInfo"/>
     </fragment>
+    <fragment android:id="@+id/commentsFragmment" android:name="com.example.beta.ui.CommentsFragmment"
+              android:label="fragment_comments_fragmment" tools:layout="@layout/fragment_comments_fragmment"/>
 </navigation>

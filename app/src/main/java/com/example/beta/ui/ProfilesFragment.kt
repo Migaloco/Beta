@@ -2,10 +2,12 @@ package com.example.beta.ui
 
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.InputType
 import android.text.method.KeyListener
 import android.util.Log
@@ -13,6 +15,7 @@ import android.view.*
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.beta.R
@@ -22,12 +25,18 @@ import kotlinx.android.synthetic.main.fragment_profiles.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
+import android.content.DialogInterface
+import android.view.LayoutInflater
+import kotlinx.android.synthetic.main.alert_window_password.*
+import kotlinx.android.synthetic.main.alert_window_password.view.*
+
 
 class ProfilesFragment : Fragment() {
 
     private var mUpdateUser: AsyncTaskCheckUpdateUsersProf? = null
     private var mUpdateRestUser: AsyncTaskRestOfUserInfo? = null
-    private lateinit var district: JSONObject
+    private var mDeleteUser: AsyncTaskDeleteUser? = null
+    private lateinit var json: JSONObject
     private var method: String? = null
     private var url: String? = null
     private var email:String? = null
@@ -47,7 +56,7 @@ class ProfilesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        district = JSONObject()
+        json = JSONObject()
 
         getUserInfo()
 
@@ -71,6 +80,8 @@ class ProfilesFragment : Fragment() {
         fragment_profiles_points_text.text = pString
     }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     fun getUserInfo(){
 
         url = "https://turisnova.appspot.com/rest/listUsers/UserSelect"
@@ -79,7 +90,7 @@ class ProfilesFragment : Fragment() {
         val settings = context!!.getSharedPreferences("AUTHENTICATION", 0)
         username = settings.getString("username", null)
 
-        district.accumulate("username", username)
+        json.accumulate("username", username)
 
         mUpdateUser = AsyncTaskCheckUpdateUsersProf()
         mUpdateUser!!.execute(null)
@@ -111,7 +122,7 @@ class ProfilesFragment : Fragment() {
         }
 
         override fun doInBackground(vararg params: Void): List<String>? {
-            return HttpRequest().doHTTP(URL(url), district, method!!)
+            return HttpRequest().doHTTP(URL(url), json, method!!)
         }
 
         override fun onPostExecute(success: List<String>?) {
@@ -123,18 +134,21 @@ class ProfilesFragment : Fragment() {
         }
     }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     fun getRestOfUserInfo(){
 
         url = "https://turisnova.appspot.com/rest/UserRoute/getRouteStats"
         method = "GET"
 
-        district = JSONObject()
+        json = JSONObject()
 
         mUpdateRestUser = AsyncTaskRestOfUserInfo()
         mUpdateRestUser!!.execute(null)
         val result = mUpdateRestUser!!.get()
+        val b = result.get(0)
 
-        when(result.get(0)){
+        when(b){
             "200" ->{
                 val arrayJ = JSONArray(result[1])
 
@@ -168,7 +182,7 @@ class ProfilesFragment : Fragment() {
         }
 
         override fun doInBackground(vararg params: Void): List<String>? {
-            return HttpRequest().doHTTP(URL(url), district, method!!)
+            return HttpRequest().doHTTP(URL(url), json, method!!)
         }
 
         override fun onPostExecute(success: List<String>?) {
@@ -180,12 +194,122 @@ class ProfilesFragment : Fragment() {
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu){
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        val suggestions = menu.findItem(R.id.suggestionsFragment)
-        val settings = menu.findItem(R.id.settingsFragment)
+    fun deleteProfile(password: String) {
 
-        suggestions?.isVisible = false
-        settings?.isVisible = false
+        url = "https://turisnova.appspot.com/rest/deleteAccount/user"
+        method = "POST"
+
+        val settings = context!!.getSharedPreferences("AUTHENTICATION", 0)
+        val username = settings.getString("username", null)!!
+
+        json.accumulate("username", username)
+        json.accumulate("password", password)
+
+        mDeleteUser = AsyncTaskDeleteUser()
+        mDeleteUser!!.execute()
+        val result = mDeleteUser!!.get()
+        val code = result[0]
+
+        when (code) {
+            "200" -> {
+                Toast.makeText(context, "Succefully deleted account", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Goodbye", Toast.LENGTH_SHORT).show()
+                appExit()
+            }
+        }
+    }
+
+    private fun appExit() {
+
+        val editor = activity!!.getSharedPreferences("AUTHENTICATION", 0).edit()
+        editor.clear()
+        editor.apply()
+
+        activity!!.finish()
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+    }
+
+    fun deleteDialog(){
+        val builder = AlertDialog.Builder(activity!!)
+        builder.setMessage("Are you sure you want to delete your account?")
+            .setCancelable(false)
+            .setPositiveButton("Yes") { _, _ ->
+                showPasswordDialog()
+            }.setNegativeButton("No"){dialog,_ ->
+                dialog.dismiss()
+            }
+        val alert = builder.create()
+        alert.show()
+    }
+
+    fun showPasswordDialog() {
+
+        val dialogBuilder = AlertDialog.Builder(context!!)
+
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.alert_window_password, null)
+        dialogBuilder.setView(dialogView)
+
+        dialogBuilder.setTitle("Authentication")
+        .setMessage("Please enter password")
+        .setPositiveButton("Done") {dialog , _ ->
+
+            val password = dialogView.dialog_password.text
+            val confirmation = dialogView.dialog_password_conf.text
+
+            if(password!!.isEmpty() || confirmation!!.isEmpty()) Toast.makeText(context, "Missing fields", Toast.LENGTH_SHORT).show()
+            else if(password.toString() != confirmation.toString())Toast.makeText(context, "Passwords don't match", Toast.LENGTH_SHORT).show()
+            else{
+                deleteProfile(password.toString())
+            }
+        }
+        dialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.cancel()
+        }
+        val b = dialogBuilder.create()
+        b.show()
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    inner class AsyncTaskDeleteUser internal constructor() :
+        AsyncTask<Void, Void, List<String>>() {
+
+        override fun onPreExecute() {
+            if (false) {
+                cancel(true)
+            }
+        }
+
+        override fun doInBackground(vararg params: Void): List<String>? {
+            return HttpRequest().doHTTP(URL(url), json, method!!)
+        }
+
+        override fun onPostExecute(success: List<String>?) {
+            mDeleteUser = null
+        }
+
+        override fun onCancelled() {
+            mDeleteUser = null
+        }
+    }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId){
+            R.id.delete_menu -> deleteDialog()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.delete_profile_menu, menu)
     }
 }

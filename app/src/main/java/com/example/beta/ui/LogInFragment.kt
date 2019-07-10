@@ -83,17 +83,6 @@ class LogInFragment : Fragment(), IdCallback {
         })
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu){
-
-        val suggestions = menu.findItem(R.id.suggestionsFragment)
-        val settings = menu.findItem(R.id.settingsFragment)
-        val logout = menu.findItem(R.id.logout)
-
-        suggestions?.isVisible = false
-        settings?.isVisible = false
-        logout?.isVisible = false
-    }
-
     override fun onUserLogeedIn(token: JSONObject) {
 
         val settings = context!!.getSharedPreferences("AUTHENTICATION", 0)

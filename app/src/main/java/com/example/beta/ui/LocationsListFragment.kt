@@ -30,13 +30,4 @@ class LocationsListFragment : Fragment() {
         fragment_locations_list_list.adapter = LocationsRecyclerAdapter(context!!, activities)
     }
 
-
-    override fun onPrepareOptionsMenu(menu: Menu){
-
-        val suggestions = menu.findItem(R.id.suggestionsFragment)
-        val settings = menu.findItem(R.id.settingsFragment)
-
-        suggestions?.isVisible = false
-        settings?.isVisible = false
-    }
 }

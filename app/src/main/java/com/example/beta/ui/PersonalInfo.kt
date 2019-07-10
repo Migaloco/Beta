@@ -121,11 +121,8 @@ class PersonalInfo : Fragment() {
 
         save = menu.findItem(R.id.profiles_menu_save)
         edit = menu.findItem(R.id.profiles_menu_edit)
-        val suggestions = menu.findItem(R.id.suggestionsFragment)
-        val settings = menu.findItem(R.id.settingsFragment)
 
         save?.isVisible = false
-        suggestions?.isVisible = false
-        settings?.isVisible = false
+
     }
 }

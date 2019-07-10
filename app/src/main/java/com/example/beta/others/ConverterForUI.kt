@@ -2,6 +2,7 @@ package com.example.beta.others
 
 import com.example.beta.database.converter.ListInt
 import com.example.beta.database.converter.ListString
+import com.google.android.gms.maps.model.LatLng
 
 class ConverterForUI {
 
@@ -30,5 +31,12 @@ class ConverterForUI {
         array.addAll(list.list)
 
         return array
+    }
+
+    fun stringToLatLng(str: String):LatLng{
+
+        val photos = str.split(",")
+
+        return LatLng(photos[0].toDouble(), photos[1].toDouble())
     }
 }

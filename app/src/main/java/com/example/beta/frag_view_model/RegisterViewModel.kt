@@ -31,6 +31,7 @@ class RegisterViewModel : ViewModel() {
 
     fun collectProfileData(email: String, telefone: String) {
 
+        user!!.accumulate("role", " ")
         user!!.accumulate("mail", email)
         user!!.accumulate("telemovel", telefone)
 
