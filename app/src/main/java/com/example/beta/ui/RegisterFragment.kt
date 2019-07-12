@@ -83,88 +83,11 @@ class RegisterFragment : Fragment() {
         }
     }
 
-    /*
-    private fun attemptSignIn() {
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
 
-        if (mAuthTask != null) {
-            return
-        }
+        val logout = menu.findItem(R.id.logout)
 
-        mAuthTask = AsyncTaskSignIn()
-        mAuthTask!!.execute(null)
-
-        val res = mAuthTask!!.get()
-
-        when(res) {
-            "200" -> {
-
-                Toast.makeText(context, "Successful register", Toast.LENGTH_SHORT).show()
-
-                findNavController(this).popBackStack()
-            }
-            else -> {
-                when (res) {
-
-                    "400" -> Toast.makeText(context, "User already exists", Toast.LENGTH_SHORT).show()
-                    "500" -> Toast.makeText(context, "The server is fried", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }*/
-
-    ////////////////////////////////////Internet/////////////////////////////////////////////
-
-    /*
-    @SuppressLint("StaticFieldLeak")
-    inner class AsyncTaskSignIn internal constructor() :
-        AsyncTask<Void, Void, String>() {
-
-        override fun onPreExecute() {
-
-            if (!isNetworkConnected()) {
-
-                cancel(true)
-            }
-        }
-
-        override fun doInBackground(vararg params: Void): String? {
-            return try {
-
-                HttpRequest().doHTTP(URL("https://turisnova.appspot.com/rest/register/user"), user!!, "POST")?.get(0)
-
-            } catch (e: Exception) {
-                e.toString()
-            }
-        }
-
-        override fun onPostExecute(success: String?) {}
-
-        override fun onCancelled() {
-            mAuthTask = null
-        }
-    }*/
-
-    fun isNetworkConnected(): Boolean {
-
-        val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        if (Build.VERSION.SDK_INT < 23) {
-            val ni = cm.activeNetworkInfo
-
-            if (ni != null) {
-                return ni.isConnected && (ni.type == ConnectivityManager.TYPE_WIFI || ni.type == ConnectivityManager.TYPE_MOBILE)
-            }
-        } else {
-            val n = cm.activeNetwork
-
-            if (n != null) {
-                val nc = cm.getNetworkCapabilities(n)
-
-                return nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || nc.hasTransport(
-                    NetworkCapabilities.TRANSPORT_WIFI
-                )
-            }
-        }
-        return false
+        logout.isVisible = false
     }
 }

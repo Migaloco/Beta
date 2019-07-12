@@ -1,12 +1,17 @@
 package com.example.beta.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -54,8 +59,6 @@ class CourseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var coursentity:CoursesEnt? = null
-
         viewModel = ViewModelProviders.of(this).get(CoursesViewModel::class.java)
 
         val course = arguments?.getString("course")!!
@@ -68,14 +71,6 @@ class CourseFragment : Fragment() {
         val finish = arguments?.getString("finish")!!
         val wMarkers = arguments?.getStringArrayList("markers")!!
         val wDescriptions = arguments?.getStringArrayList("descriptions")!!
-
-        /*
-        viewModel.getCourse(course)
-
-        viewModel.singleCourse.observe(this, Observer {
-
-            coursentity = it
-        })*/
 
         fragment_course_name.text = course
         fragment_course_difficulty.text = "Difficulty: $difficulty"

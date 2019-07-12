@@ -1,32 +1,24 @@
 package com.example.beta.ui
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
+import android.graphics.Color
 import android.net.ConnectivityManager
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.example.beta.R
-import java.net.URL
 import android.net.NetworkCapabilities
 import android.os.Build
-import android.util.JsonToken
-import android.util.Log
 import androidx.activity.addCallback
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation.findNavController
 import com.example.beta.frag_view_model.LoginViewModel
-import com.example.beta.others.HttpRequest
 import com.example.beta.others.IdCallback
 import com.google.android.material.snackbar.Snackbar
-import org.json.JSONException
+import kotlinx.android.synthetic.main.fragment_log_in.*
 import org.json.JSONObject
 
 
@@ -51,10 +43,12 @@ class LogInFragment : Fragment(), IdCallback {
 
         val navController = findNavController(view)
 
+        fragment_login_password_text.setBackgroundColor(Color.TRANSPARENT)
+
         view.findViewById<View>(R.id.fragment_login_button).setOnClickListener {
 
             val username = view.findViewById<EditText>(R.id.fragment_login_username).text
-            val pass = view.findViewById<EditText>(R.id.fragment_login_password).text
+            val pass = view.findViewById<EditText>(R.id.fragment_login_password_text).text
 
             if (username.isEmpty() || pass.isEmpty()) {
                 Toast.makeText(context, "Missing username or password", Toast.LENGTH_SHORT).show()
@@ -112,5 +106,13 @@ class LogInFragment : Fragment(), IdCallback {
             }
         }
         return false
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        val logout = menu.findItem(R.id.logout)
+
+        logout.isVisible = false
     }
 }

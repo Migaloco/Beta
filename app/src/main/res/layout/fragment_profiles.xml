@@ -22,9 +22,9 @@
                     android:text="Profile"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" android:id="@+id/fragment_profiles_title"
-                    android:textSize="70sp" android:fontFamily="@font/roboto_medium_italic"
+                    android:textSize="50sp" android:fontFamily="@font/roboto_medium_italic"
                     android:textColor="#FFFFFF" android:gravity="center_vertical"
-                    android:layout_marginStart="10dp" android:layout_weight="1"/>
+                    android:layout_marginStart="10dp" android:layout_weight="1" android:layout_marginEnd="10dp"/>
         </LinearLayout>
         <LinearLayout
                 android:orientation="horizontal"

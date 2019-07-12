@@ -2,6 +2,7 @@ package com.example.beta.ui
 
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.AsyncTask
@@ -26,6 +27,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
 import android.content.DialogInterface
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.view.LayoutInflater
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.beta.adapters.LocationsRecyclerAdapter

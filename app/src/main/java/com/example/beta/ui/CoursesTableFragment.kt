@@ -1,6 +1,9 @@
 package com.example.beta.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -63,12 +66,6 @@ class CoursesTableFragment : Fragment() {
         fragment_courses_table_list.adapter = adapter
 
         coursesViewModel = ViewModelProviders.of(this).get(CoursesViewModel::class.java)
-
-        /*
-        coursesViewModel.allCourses.observe(this, Observer {
-
-            adapter.setCourses(getlistByCtg(it))
-        })*/
 
         checkDistrict()
         getDistrictCourses()
@@ -134,7 +131,6 @@ class CoursesTableFragment : Fragment() {
                 }
 
                 listFromServ = arrayCoursesEnt
-                //coursesViewModel.insertAll(arrayCoursesEnt)
             }
             else -> Toast.makeText(context,"FailedUpdateCourses", Toast.LENGTH_SHORT).show()
         }

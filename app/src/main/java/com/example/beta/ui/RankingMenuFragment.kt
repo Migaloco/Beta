@@ -1,7 +1,11 @@
 package com.example.beta.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -43,14 +47,40 @@ class RankingMenuFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         district = JSONObject()
 
-        getUsers()
+        val arrayServ = getUsers()
+
+        val ordered = orderRanking(arrayServ)
 
         fragment_ranking_menu_list.layoutManager = LinearLayoutManager(context)
-        fragment_ranking_menu_list.adapter = RankingRecyclerAdapter(context!!, listFromServ)
+        fragment_ranking_menu_list.adapter = RankingRecyclerAdapter(context!!, ordered)
 
     }
 
-    fun getUsers(){
+    fun orderRanking(arrayServ: ArrayList<RankingData>):ArrayList<RankingData>{
+
+        val array = arrayListOf<RankingData>()
+
+        for(i in arrayServ){
+
+            if(array.size == 0){
+                array.add(i)
+            }else {
+                val points = i.points
+
+                for (o in 0 until array.size) {
+
+                    if (points > array[o].points || o == array.size - 1){
+                        array.add(o,i)
+                        break
+                    }
+                }
+            }
+        }
+
+        return array
+    }
+
+    fun getUsers(): ArrayList<RankingData>{
 
         url = "https://turisnova.appspot.com/rest/UserRoute/getRouteStats"
         method = "GET"
@@ -61,22 +91,24 @@ class RankingMenuFragment : Fragment() {
 
         val code = result.get(0)
 
+        val ranking: ArrayList<RankingData> = arrayListOf()
+
         when(code){
             "200" ->{
                 val arrayJ = JSONObject(result[1])
+                val names = arrayJ.keys()
 
-                val ranking = arrayListOf<RankingData>()
-                for(i in 0 until arrayJ.length()){
+                names.forEach {
 
-                    val name = arrayJ.getString("")
-                    val points = arrayJ.getInt("")
+                    val points = arrayJ.getInt(it)
+
+                    ranking.add(RankingData(it,points))
                 }
-
-                listFromServ = ranking
-                //usersViewModel.insertAllUsers(ArrayList(mapCoursesEnt.values))
             }
             else -> Toast.makeText(context,"FailedUpdateUsers", Toast.LENGTH_SHORT).show()
         }
+
+        return ranking
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -90,7 +122,7 @@ class RankingMenuFragment : Fragment() {
         }
 
         override fun doInBackground(vararg params: Void): List<String>? {
-            return HttpRequest().doHTTP(URL(url), district!!, method!!)
+            return HttpRequest().doHTTP(URL(url), district, method!!)
         }
 
         override fun onPostExecute(success: List<String>?) {

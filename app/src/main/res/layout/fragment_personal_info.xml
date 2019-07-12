@@ -9,7 +9,22 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/green_background" android:weightSum="7" android:paddingTop="20dp">
+            android:background="@drawable/green_background" android:weightSum="14" android:paddingTop="20dp">
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:layout_weight="6" android:layout_margin="8dp">
+            <ImageView
+                    app:srcCompat="@drawable/ic_person_black_24dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:id="@+id/imageView3" android:layout_weight="3"
+                    android:layout_margin="5dp"/>
+            <TextView
+                    android:text="TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:id="@+id/fragment_personal_info_username" android:layout_weight="1"
+                    android:textSize="20sp" android:gravity="center_vertical" android:textStyle="bold"/>
+        </LinearLayout>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

@@ -32,14 +32,6 @@ class CoursesMenuFragment : Fragment() {
 
     private lateinit var categoriesViewModel:CategoriesViewModel
 
-    //private val viewModel: LoginViewModel by activityViewModels()
-
-    //private var district: JSONObject? = null
-    //private var method: String? = null
-    //private var url: String? = null
-
-    //private var mUpdateTask: AsyncTaskCheckUpdate? = null
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

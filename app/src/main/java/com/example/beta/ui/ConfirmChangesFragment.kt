@@ -1,7 +1,12 @@
 package com.example.beta.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -41,6 +46,9 @@ class ConfirmChangesFragment : Fragment() {
 
         val settings = context!!.getSharedPreferences("AUTHENTICATION", 0)
         val username = settings.getString("username", null)!!
+
+        fragment_confirm_changes_password.setBackgroundColor(Color.TRANSPARENT)
+        fragment_confirm_changes_confirm.setBackgroundColor(Color.TRANSPARENT)
 
         fragment_confirm_changes_submit.setOnClickListener {
 

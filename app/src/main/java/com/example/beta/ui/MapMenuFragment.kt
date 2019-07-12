@@ -2,9 +2,6 @@ package com.example.beta.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.beta.R
 import com.google.android.gms.maps.GoogleMap
@@ -21,13 +18,20 @@ import android.location.LocationManager
 import androidx.core.content.ContextCompat.getSystemService
 import android.content.DialogInterface
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Paint
 import android.location.Location
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.opengl.Visibility
 import android.os.*
 import android.provider.Settings
 import android.util.Log
+import android.view.*
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.Constraints.TAG
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.Navigation
 import com.example.beta.others.ConverterForUI
 import com.example.beta.others.HttpRequest
@@ -47,6 +51,7 @@ import com.google.maps.model.TravelMode
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.DirectionsApi
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_map_menu.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -78,7 +83,10 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
     private var title:String? = null
     private var points:Int? = null
     private var counter: Int? = null
+    private var array: ArrayList<LatLng>? = null
     private var mUpdateRestUserMap: AsyncTaskRestOfUserInfoMap? = null
+    private var menuItem:MenuItem? = null
+    private var canceled:Boolean? = null
 
     private val completedPoints: ArrayList<Boolean> = arrayListOf()
 
@@ -89,6 +97,12 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         savedInstanceState: Bundle?
     ): View? {
 
+        display = arguments?.getBoolean("course")
+        startC = arguments?.getBoolean("initiate")
+
+        if(startC != null && startC as Boolean) navigationMode()
+
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_map_menu, container, false)
     }
 
@@ -114,15 +128,30 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         }
 
         framgent_map_menu_reset_map.setOnClickListener { resetMap() }
-        fragment_map_button_check.setOnClickListener { getLocationForCheck() }
-
-
-        fragment_map_button_check.visibility = View.GONE
-        fragment_map_menu_cancel.visibility = View.GONE
-        fragment_map_button_check.setBackgroundColor(ContextCompat.getColor(context!!, R.color.darkGrey))
+        fragment_layout_button.setOnClickListener { getLocationForCheck() }
+        fragment_map_menu_cancel.setOnClickListener { giveUpDialogCancel() }
         fragment_map_menu_cancel.setBackgroundColor(ContextCompat.getColor(context!!, R.color.darkGrey))
+        fragment_layout_button.setBackgroundColor(ContextCompat.getColor(context!!, R.color.darkGrey))
+        fragment_map_menu_both.visibility = View.GONE
+
+        if(startC != null && startC as Boolean){
+
+            view.setFocusableInTouchMode(true)
+            view.requestFocus()
+            view.setOnKeyListener(View.OnKeyListener { view, i, keyEvent ->
+
+                if (i == KeyEvent.KEYCODE_BACK) {
+                    giveUpDialogBackStack()
+                    return@OnKeyListener true
+                }
+
+                return@OnKeyListener false
+            })
+        }
 
         points = 0
+
+        for(i in 0..3) completedPoints.add(false)
     }
 
      override fun onSaveInstanceState(outState: Bundle) {
@@ -152,6 +181,45 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         mMapView.onStop()
     }
 
+    private fun giveUpDialogBackStack(){
+        val builder = AlertDialog.Builder(activity!!)
+        builder.setMessage("Going back will result in already earned point being added but the route will stay unfinished. Are you sure?")
+            .setCancelable(false)
+            .setPositiveButton("Yes") { _, _ ->
+                canceled = true
+                getCounter()
+                Navigation.findNavController(view!!).popBackStack()
+            }.setNegativeButton("No"){dialog,_ ->
+                dialog.dismiss()
+            }
+        val alert = builder.create()
+        alert.show()
+    }
+
+    private fun giveUpDialogCancel(){
+        val builder = AlertDialog.Builder(activity!!)
+        builder.setMessage("Cancelling will result in already earned points so far being added but the route will stay unfinished. Are you sure?")
+            .setCancelable(false)
+            .setPositiveButton("Yes") { _, _ ->
+                canceled = true
+                getCounter()
+                Navigation.findNavController(view!!).navigate(R.id.coursesMenuFragment)
+            }.setNegativeButton("No"){dialog,_ ->
+                dialog.dismiss()
+            }
+        val alert = builder.create()
+        alert.show()
+    }
+
+    private fun appExit() {
+
+        activity!!.finish()
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+    }
+
     override fun onMapReady(map: GoogleMap) {
 
         gMap = map
@@ -162,9 +230,6 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
             gMap.setOnMyLocationButtonClickListener(this)
             gMap.setOnMyLocationClickListener(this)
         }
-
-        display = arguments?.getBoolean("course")
-        startC = arguments?.getBoolean("initiate")
 
         if(display != null || startC != null){
 
@@ -179,17 +244,21 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
                 displayCourse()
             } else{
                 framgent_map_menu_reset_map.visibility = View.GONE
-                fragment_map_button_check.visibility = View.VISIBLE
-                fragment_map_menu_cancel.visibility = View.VISIBLE
+                fragment_map_menu_both.visibility = View.VISIBLE
+
+                navigationMode()
 
                 title = arguments?.getString("title")
-
                 startCourse()
             }
         } else{
-
             getLastKnownLocationCameraView()
         }
+    }
+
+    fun navigationMode(){
+
+        activity!!.bottom_nav.visibility = View.GONE
     }
 
     private fun getLastKnownLocationCameraView(){
@@ -244,8 +313,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         } else {
             requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
-            )
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)
         }
     }
 
@@ -358,15 +426,15 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
             myLoc = null
         }
 
-        val array = arrayListOf<LatLng>()
-        array.addAll(StringToDouble().getStringToListDoubles(start!!))
+        array = arrayListOf<LatLng>()
+        array!!.addAll(StringToDouble().getStringToListDoubles(start!!))
 
         for(i in 0 until waypoints!!.size){
 
-            array.addAll(StringToDouble().getStringToListDoubles(waypoints!![i]))
+            array!!.addAll(StringToDouble().getStringToListDoubles(waypoints!![i]))
         }
 
-        array.addAll(StringToDouble().getStringToListDoubles(finish!!))
+        array!!.addAll(StringToDouble().getStringToListDoubles(finish!!))
 
         directions.mode(TravelMode.WALKING)
         directions.origin(start)
@@ -387,7 +455,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
 
                 override fun onResult(result: DirectionsResult?) {
                     if(result != null){
-                        addCourseMarkers(array)
+                        addCourseMarkers(array!!)
                         addPolylinesToMap(result)
                     }
                     Log.d(TAG, "finished calculating")
@@ -428,10 +496,7 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
                      val marker = gMap.addMarker(
                          MarkerOptions()
                              .position(i)
-                             .title("Coords: (${i.latitude}, ${i.longitude})")
-                             .snippet("Click this window if you're near the activity")
                      )
-                     marker.showInfoWindow()
                  }
              }
         }
@@ -471,9 +536,9 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
 
         var check = 0
 
-        for(i in 0 until completedPoints.size){
+        for(i in 0..completedPoints.size){
 
-            if(completedPoints[i] == false){
+            if( i == completedPoints.size || !completedPoints[i]){
                 check = i
                 break
             }
@@ -484,29 +549,27 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         userLoc.latitude = lat
 
         val pointLoc = Location("point")
-        pointLoc.latitude = ConverterForUI().stringToLatLng(waypoints!![check]).latitude
-        pointLoc.longitude = ConverterForUI().stringToLatLng(waypoints!![check]).longitude
+        pointLoc.latitude = array?.get(check)!!.latitude
+        pointLoc.longitude = array?.get(check)!!.longitude
 
         val dist = userLoc.distanceTo(pointLoc)
 
-        if (dist < 75){
+        if (dist < 20){
 
-            completedPoints[check] = true
             getPoints(check)
 
-            if(check == completedPoints.size - 2){
+            if(check == completedPoints.size - 1){
 
+                completedPoints[check] = true
                 Toast.makeText(context, "Only missing the final activity", Toast.LENGTH_SHORT).show()
             }
-            else if(check == completedPoints.size - 1){
-
+            else if(check == completedPoints.size){
                 getCounter()
-
             }else{
+                completedPoints[check] = true
                 Toast.makeText(context, "Activity was reached", Toast.LENGTH_SHORT).show()
             }
         }else{
-
             Toast.makeText(context, "Not close enough", Toast.LENGTH_SHORT).show()
         }
     }
@@ -516,13 +579,23 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         var p = 0
 
         when(check){
-            0 -> points = 10
-            1 -> points = 20
-            2 -> points = 30
-            3 -> points = 40
+            0 -> p = 10
+            1 -> p = 20
+            2 -> p = 30
+            3 -> p = 40
+            4 -> p = 50
         }
-
         points = points?.plus(p)
+    }
+
+    private fun resetFragment(){
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            fragmentManager!!.beginTransaction().detach(this).commitNow()
+            fragmentManager!!.beginTransaction().attach(this).commitNow()
+        } else {
+            fragmentManager!!.beginTransaction().detach(this).attach(this).commit()
+        }
     }
 
     private fun sendStats(){
@@ -544,7 +617,13 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         val result = mUpdateStats!!.get()
 
         when(result.get(0)){
-            "200" -> Toast.makeText(context, "Good job, you copmleted a route", Toast.LENGTH_SHORT).show()
+            "200" ->{
+                if(canceled != null && canceled!!) Toast.makeText(context, "Your points were saved", Toast.LENGTH_SHORT).show()
+                else{
+                    Toast.makeText(context, "Good job, you copmleted a route", Toast.LENGTH_SHORT).show()
+                    Navigation.findNavController(view!!).navigate(R.id.coursesMenuFragment)
+                }
+            }
             else -> Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
         }
     }
@@ -603,6 +682,12 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
                     if(course == title){
 
                         counter = map.getInt("counter")
+                        val point = map.getInt("points")
+
+                        if(points == 150){
+                            counter = counter!! + 1
+                        }
+                        points = points!! + point
                     }
                 }
             }
@@ -632,5 +717,11 @@ class MapMenuFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationCl
         override fun onCancelled() {
             mUpdateRestUserMap = null
         }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        if(startC != null && startC as Boolean)menu.findItem(R.id.logout).isVisible = false
     }
 }

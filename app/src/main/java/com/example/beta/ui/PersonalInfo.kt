@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.navigation.Navigation
 import com.example.beta.R
 import com.example.beta.others.HttpRequest
@@ -28,7 +29,10 @@ class PersonalInfo : Fragment() {
     private var mUpdateUser: AsyncTaskCheckUpdateUsersProf? = null
     private lateinit var json: JSONObject
     private var method: String? = null
-    private var url: String = ""
+    private var url: String = " "
+    private var user: String = " "
+    private var email: String = " "
+    private var phone:String = " "
 
     private var save :MenuItem? = null
     private var edit :MenuItem? = null
@@ -52,6 +56,8 @@ class PersonalInfo : Fragment() {
         setDisabled()
 
         getUserInfo()
+
+        fragment_personal_info_username.text = user
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,6 +69,8 @@ class PersonalInfo : Fragment() {
 
         val settings = context!!.getSharedPreferences("AUTHENTICATION", 0)
         val username = settings.getString("username", null)
+
+        user = username
 
         json = JSONObject()
         json.accumulate("username", username)
@@ -79,8 +87,8 @@ class PersonalInfo : Fragment() {
 
                 val propMap = arrayJ.getJSONObject(0).getJSONObject("propertyMap")
 
-                val email = propMap.getString("user_email")
-                val phone = propMap.getInt("user_telemovel").toString()
+                email = propMap.getString("user_email")
+                phone = propMap.getInt("user_telemovel").toString()
 
                 fragment_profiles_email_text.setText(email, TextView.BufferType.EDITABLE)
                 fragment_profiles_phone_text.setText(phone, TextView.BufferType.EDITABLE)
@@ -121,6 +129,20 @@ class PersonalInfo : Fragment() {
         background.add(fragment_profiles_phone_text.background)
     }
 
+    fun changeDialog(){
+        val builder = AlertDialog.Builder(activity!!)
+        builder.setMessage("Are you sure you want to change your account information?")
+            .setCancelable(false)
+            .setPositiveButton("Yes") { _, _ ->
+                changeInfo()
+            }.setNegativeButton("No"){dialog,_ ->
+                dialog.dismiss()
+                setDisabled()
+            }
+        val alert = builder.create()
+        alert.show()
+    }
+
     fun changeInfo(){
 
         val bundle = Bundle()
@@ -139,8 +161,10 @@ class PersonalInfo : Fragment() {
         enableEditText(fragment_profiles_phone_text, 1)
     }
 
-
     fun setDisabled(){
+
+        fragment_profiles_email_text.setText(email, TextView.BufferType.EDITABLE)
+        fragment_profiles_phone_text.setText(phone, TextView.BufferType.EDITABLE)
 
         disableEditText(fragment_profiles_email_text, false)
         disableEditText(fragment_profiles_phone_text, true)
@@ -170,7 +194,7 @@ class PersonalInfo : Fragment() {
             R.id.profiles_menu_save -> {
                 edit!!.isVisible = true
                 save!!.isVisible = false
-                changeInfo()
+                changeDialog()
             }
         }
 
@@ -189,6 +213,5 @@ class PersonalInfo : Fragment() {
         edit = menu.findItem(R.id.profiles_menu_edit)
 
         save?.isVisible = false
-
     }
 }

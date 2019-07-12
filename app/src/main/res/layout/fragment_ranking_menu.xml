@@ -14,7 +14,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textSize="30sp" android:paddingBottom="35dp" android:paddingTop="20dp"/>
+                android:textSize="40sp" android:paddingBottom="20dp" android:paddingTop="20dp"
+                android:fontFamily="@font/roboto_medium_italic" android:textColor="#FFFFFF"/>
 
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/fragment_ranking_menu_list"

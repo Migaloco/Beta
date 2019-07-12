@@ -38,5 +38,4 @@ class CommentsRecyclerAdapter (val context: Context): RecyclerView.Adapter<Custo
         listOfComments = list
         notifyDataSetChanged()
     }
-
 }

@@ -38,18 +38,26 @@
             app:layout_constraintVertical_bias="0.061" android:hint="Name"
             android:background="@drawable/white_background" android:paddingStart="20dp"
             app:layout_constraintHorizontal_bias="0.523"/>
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
+            app:passwordToggleEnabled="true"
+            android:id="@+id/fragment_login_password_layout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:ems="10"
-            android:id="@+id/fragment_login_password"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            android:layout_height="wrap_content" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/fragment_login_username"
-            app:layout_constraintVertical_bias="0.059" android:hint="Password"
-            android:background="@drawable/white_background" android:paddingStart="20dp"/>
+            app:layout_constraintVertical_bias="0.059"
+            android:background="@drawable/white_background" android:paddingStart="20dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:id="@+id/fragment_login_password_text"/>
+    </com.google.android.material.textfield.TextInputLayout>
     <TextView
             android:text="Are you not yet registered?"
             android:layout_width="wrap_content"
@@ -58,7 +66,7 @@
             android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/fragment_login_password"
+            app:layout_constraintTop_toBottomOf="@+id/fragment_login_password_layout"
             app:layout_constraintHorizontal_bias="0.169"
             app:layout_constraintVertical_bias="0.033"/>
     <TextView

@@ -2,8 +2,12 @@ package com.example.beta.ui
 
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -49,10 +53,15 @@ class CommentsFragmment : Fragment() {
 
         fragment_comments_submit.setOnClickListener {
 
-            val rating = fragment_comments_rating.text.toString().toInt()
-            val text = comment.text.toString()
+            if(fragment_comments_rating.text.isEmpty() || comment.text.isEmpty()){
+                Toast.makeText(context, "Missing information", Toast.LENGTH_SHORT).show()
+            }
+            else{
 
-            submitComment(title!!, text, rating)
+                val rating = fragment_comments_rating.text.toString().toInt()
+                val text = comment.text.toString()
+                submitComment(title!!, text, rating)
+            }
         }
         json = JSONObject()
     }
@@ -98,7 +107,7 @@ class CommentsFragmment : Fragment() {
         }
 
         override fun doInBackground(vararg params: Void): List<String>? {
-            return HttpRequest().doHTTP(URL(url), json!!, method!!)
+            return HttpRequest().doHTTP(URL(url), json, method!!)
         }
 
         override fun onPostExecute(success: List<String>?) {

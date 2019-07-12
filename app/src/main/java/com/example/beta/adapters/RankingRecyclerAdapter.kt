@@ -20,7 +20,8 @@ class RankingRecyclerAdapter(val context: Context, val names: ArrayList<RankingD
     }
 
     override fun getItemCount(): Int {
-        return names.size
+        if(names.size < 10) return names.size
+        else return 10
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
